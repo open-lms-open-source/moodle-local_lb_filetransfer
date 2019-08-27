@@ -105,7 +105,10 @@ if ($hassiteconfig) {
     $description = get_string('masterfiledesc','local_learnbookfiletransfer');
     $settings->add(new admin_setting_configtext($name, $visiblename, $description, ''));
 
-
+    $name = 'local_learnbookfiletransfer/filearchive';
+    $visiblename = get_string('filearchiveenable','local_learnbookfiletransfer');
+    $description = get_string('filearchiveenabledesc','local_learnbookfiletransfer');
+    $settings->add(new admin_setting_configcheckbox($name, $visiblename, $description, 0));
 
     /*
     $name = 'local_learnbookfiletransfer/emailenable';

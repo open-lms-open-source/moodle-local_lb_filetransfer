@@ -96,14 +96,29 @@ function testConnection() {
     return true;
 }
 
+function archiveDir () {
+    //fielsystem api to be used
+    /*
+    global $CFG;
+    if (file_exists ($CFG->dataroot . '/temp/lb_filetransfer_backup')) {
+        mtrace("Backup folder already exists, using existing one.");
+        $backupdir = 'lb_filetransfer_backup/';
+        return $backupdir;
+    }
+    $backupdir = make_temp_directory('lb_filetransfer_backup/');
+    mtrace("Created backup folder for archiving.");
+    return $backupdir;
+    */
+}
+
 function createTempDir () {
     global $CFG;
-    if (file_exists ($CFG->dataroot . '/temp/learnbookfiletransfer')) {
-        mtrace("Temporary file already exists, using existing one.");
-        $tempdir = 'learnbookfiletransfer/';
+    if (file_exists ($CFG->dataroot . '/temp/lb_filetransfer')) {
+        mtrace("Temporary folder already exists, using existing one.");
+        $tempdir = 'lb_filetransfer/';
         return $tempdir;
     }
-    $tempdir = make_temp_directory('learnbookfiletransfer/');
+    $tempdir = make_temp_directory('lb_filetransfer/');
     mtrace("Created temp folder for the file.");
     return $tempdir;
 }
@@ -128,26 +143,34 @@ function getFile() {
         else {
             //$remotedir = '/' . $config->remotedir . '/';
             $remotedir = $config->remotedir;
+            mtrace("The directory to copy from: $remotedir");
         }
         $filename = $config->masterfile;
         $tempdir = createTempDir ();
         $localdir = $CFG->dataroot . '/temp/'.$tempdir;
+        mtrace("The directory to copy to: $localdir");
         $sftp = new Net_SFTP($host, $port);
 
 
         if ($config->enablekey == 0) {
             $password = $config->password;
             $sftp->login($username, $password);
+            mtrace("Password login successful.");
         }
         else {
             $key = new Crypt_RSA();
             $key->loadKey($config->rsatoken);
             $sftp->login($username, $key);
+            mtrace("RSA login successful.");
         }
         //var_dump($remotedir);
+        mtrace("Going to remote directory.");
         $sftp->chdir($remotedir);
+
         //var_dump($sftp->rawlist());
+        mtrace("Starting file transfer.");
         $sftp->get($remotedir.$filename, $localdir.$filename);
+        mtrace("Transferred the file from remote directory.");
 
         /*
         if ($sftp->file_exists($remotedir.$filename)) {
@@ -166,7 +189,13 @@ function getFile() {
             //return a value instead//
         }
         */
-        //deleteTempDir ($tempdir, $filename);
+        if ($config->filearchive) {
+            mtrace("Archiving uploaded file.");
+            $backupDir = archiveDir();
+        }
+        mtrace("Archiving completed.");
+        deleteTempDir ($tempdir, $filename);
+        mtrace("Deleted temporary file.");
         return true;
     }
     else {

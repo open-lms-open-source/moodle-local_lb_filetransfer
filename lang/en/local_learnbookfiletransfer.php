@@ -65,3 +65,6 @@ $string['connectionerrornofile'] = 'Connection Status: Filename is empty, please
 $string['connectionsuccess'] = 'Connection Status: Successfully connected to the server.';
 
 $string['filetransfertask'] = 'Learnbook File trasfer integration.';
+
+$string['filearchiveenable'] = 'Enable processed file archiving.';
+$string['filearchiveenabledesc'] = 'Files will be archived in the lb_filetransfer_backup directory for 30 days.';
