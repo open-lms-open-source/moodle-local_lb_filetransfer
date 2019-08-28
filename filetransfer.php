@@ -19,14 +19,16 @@ require_once($CFG->dirroot .'/local/learnbookfiletransfer/lib/phpseclib/Crypt/RS
 //require_once('/Applications/MAMP/htdocs/moodle/local/learnbookfiletransfer/lib/phpseclib/Crypt/RSA.php');
 
 function connectionStatus() {
-    global $CFG;
     $config = get_config('local_learnbookfiletransfer');
     $host = $config->host;
     $port = $config->port;
+    $filename = $config->masterfile;
     $username = $config->username;
     $sftp = new Net_SFTP($host,$port);
-    //var_dump($sftp);die;
 
+    if (empty($host)) {
+        return 4;
+    }
     if ($config->enablekey == 0) {
         $password = $config->password;
         if (!$sftp->login($username, $password)) {
@@ -40,14 +42,13 @@ function connectionStatus() {
             return 2;
         }
     }
-    if (empty($config->masterfile)) {
+    if (empty($filename)) {
         return 3;
     }
-    return 4;
+    return 5;
 }
 
 function testConnection() {
-    global $CFG;
     $config = get_config('local_learnbookfiletransfer');
     $host = $config->host;
     $port = $config->port;
@@ -168,9 +169,21 @@ function getFile() {
         $sftp->chdir($remotedir);
 
         //var_dump($sftp->rawlist());
+        mtrace("Checking if the file exist or not.");
+        if (file_exists($localdir.$filename)) {
+            $today = time();  // Make the date stampe
+            //var_dump($today);
+            $today = date("Y-m-d-h-m-s",$today);
+            //var_dump($today);
+            $newName = $localdir.$filename.'_processed_'.$today;
+            rename( $localdir.$filename, $newName);
+            mtrace("Existing file found, renamed the file to: $newName");
+        }
         mtrace("Starting file transfer.");
         $sftp->get($remotedir.$filename, $localdir.$filename);
         mtrace("Transferred the file from remote directory.");
+        chmod($localdir.$filename,0777);
+        mtrace("Changed permission of the file to 0777.");
 
         /*
         if ($sftp->file_exists($remotedir.$filename)) {
@@ -188,7 +201,7 @@ function getFile() {
             return false;
             //return a value instead//
         }
-        */
+
         if ($config->filearchive) {
             mtrace("Archiving uploaded file.");
             $backupDir = archiveDir();
@@ -196,6 +209,7 @@ function getFile() {
         mtrace("Archiving completed.");
         deleteTempDir ($tempdir, $filename);
         mtrace("Deleted temporary file.");
+        */
         return true;
     }
     else {

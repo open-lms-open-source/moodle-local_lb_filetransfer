@@ -54,6 +54,9 @@ if ($hassiteconfig) {
             $connectionTest = $OUTPUT->notification(get_string('connectionerrornofile', 'local_learnbookfiletransfer'), 'notifyproblem');
             break;
         case 4:
+            $connectionTest = $OUTPUT->notification(get_string('connectionerrornohost', 'local_learnbookfiletransfer'), 'notifyproblem');
+            break;
+        case 5:
             $connectionTest = $OUTPUT->notification(get_string('connectionsuccess', 'local_learnbookfiletransfer'), 'notifysuccess');
             break;
         default:

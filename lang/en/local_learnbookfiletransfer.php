@@ -62,6 +62,7 @@ $string['connectionerror'] = 'Connection Status: Error connecting to the server,
 $string['connectionerrorpassword'] = 'Connection Status: Error connecting to the server, please check your username and password.';
 $string['connectionerrorrsa'] = 'Connection Status: Error connecting to the server, please check your username and RSA key.';
 $string['connectionerrornofile'] = 'Connection Status: Filename is empty, please specify the filename';
+$string['connectionerrornohost'] = 'Connection Status: Hostname is empty, please specify the hostname';
 $string['connectionsuccess'] = 'Connection Status: Successfully connected to the server.';
 
 $string['filetransfertask'] = 'Learnbook File trasfer integration.';
