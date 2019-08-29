@@ -9,10 +9,21 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
 global $CFG;
 set_include_path(get_include_path(). PATH_SEPARATOR . $CFG->dirroot.'/local/learnbookfiletransfer/lib/phpseclib');
 require_once($CFG->dirroot .'/local/learnbookfiletransfer/lib/phpseclib/Net/SFTP.php');
 require_once($CFG->dirroot .'/local/learnbookfiletransfer/lib/phpseclib/Crypt/RSA.php');
+
+require_once($CFG->libdir.'/adminlib.php');
+require_once($CFG->libdir.'/csvlib.class.php');
+require_once($CFG->dirroot.'/user/profile/lib.php');
+require_once($CFG->dirroot.'/user/lib.php');
+require_once($CFG->dirroot.'/group/lib.php');
+require_once($CFG->dirroot.'/cohort/lib.php');
+require_once($CFG->dirroot.'/admin/tool/uploaduser/locallib.php');
+require_once($CFG->dirroot.'/admin/tool/uploaduser/user_form.php');
+
 
 //set_include_path(get_include_path(). PATH_SEPARATOR .'/Applications/MAMP/htdocs/moodle/local/learnbookfiletransfer/lib/phpseclib');
 //require_once('/Applications/MAMP/htdocs/moodle/local/learnbookfiletransfer/lib/phpseclib/Net/SFTP.php');
@@ -129,6 +140,109 @@ function deleteTempDir ($tempdir, $filename) {
     mtrace("Deleted temp folder created for the file.");
 }
 
+//cohort select plugin doesn't accept csv upload. When that plugin is changed, this feature can be used.
+function cohortSelect() {
+    global $DB;
+    $sql = "SELECT shortname
+            FROM {user_info_field}
+            WHERE datatype = 'cohortselect'";
+    $dbOutput = $DB->get_record_sql($sql)->shortname;
+    //var_dump($dbOutput);die;
+    if (!empty($dbOutput)) {
+        $dbOutput = 'profile_field_'.$dbOutput;
+    }
+    return $dbOutput;
+}
+
+function userUpload($fileToUpload) {
+    global $CFG, $DB, $USER;
+    $admin = get_admin();
+    $USER = $admin;
+
+    mtrace('Setting encoding and delimiter.');
+    $encoding = 'UTF-8'; // TODO: Identify File Encoding Type
+    $delimiter_name = 'comma';
+
+    mtrace('Processing the file.');
+    $filepath = $fileToUpload;
+    $iid = csv_import_reader::get_new_iid('uploaduser');
+    $cir = new csv_import_reader($iid, 'uploaduser');
+    $content = file_get_contents($filepath); // TODO - Map to Currect Location
+    if(!$content) {
+        mtrace("No file was found at ".$filepath);
+        return true;
+    }
+    $readcount = $cir->load_csv_content($content, $encoding, $delimiter_name);
+    $csvloaderror = $cir->get_error();
+
+    mtrace('Posting form data to mform.');
+    $formdata = new stdClass();
+    $_POST['iid'] = $iid;
+    $_POST['previewrows'] = '10';
+    $_POST['uutype'] = UU_USER_ADD_UPDATE;
+    $_POST['uupasswordnew'] = '1';
+    $_POST['uuupdatetype'] = UU_UPDATE_ALLOVERRIDE;
+    $_POST['uupasswordold'] = '0';
+    $_POST['uuforcepasswordchange'] = UU_PWRESET_NONE;
+    $_POST['allowrenames'] = '0';
+    $_POST['uuallowdeletes'] = '0';
+    $_POST['uuallowsuspends'] = '1';
+    $_POST['uunoemailduplicates'] = '1';
+    $_POST['uustandardusernames'] = '1';
+    $_POST['uubulk'] = UU_BULK_ALL;
+    $_POST['uuallowrenames'] = '0';
+
+    /* //cohort select plugin doesn't accept csv upload. When that plugin is changed, this feature can be used.
+    $cohortSelect = cohortSelect();
+    if (!empty($cohortSelect)) {
+        $_POST[$cohortSelect] = '_qf__force_multiselect_submission';
+    }*/
+
+    $_POST['_qf__admin_uploaduser_form2'] = '1';
+    $_POST['submitbutton'] = 'Upload users';
+    $_POST['sesskey'] = sesskey();
+    $templateuser = $USER;
+
+    mtrace('Setting up the default profile fields.');
+    $_POST['auth'] = 'manual';
+    $_POST['maildisplay'] = 2;
+    $_POST['mailformat'] = 1;
+    $_POST['maildigest'] = 0;
+    $_POST['autosubscribe'] = 1;
+    $_POST['city'] = '';
+    $_POST['country'] = $templateuser->country;
+    $_POST['timezone'] = $templateuser->timezone;
+    $_POST['lang'] = $templateuser->lang;
+    $_POST['description'] = '';
+    $_POST['url'] = '';
+    $_POST['idnumber'] = '';
+    $_POST['institution'] = '';
+    $_POST['department'] = '';
+    $_POST['phone1'] = '';
+    $_POST['phone2'] = '';
+    $_POST['address'] = '';
+    $_POST['uutype'] = UU_USER_ADD_UPDATE;
+    $_POST['submitbutton'] = 'submit';
+
+    mtrace('Getting the moodle upload user codes.');
+    ob_start();
+    chdir($CFG->dirroot . '/admin/tool/uploaduser');
+    $indexfile = file_get_contents($CFG->dirroot . '/admin/tool/uploaduser/index.php');
+    $indexfile = str_replace("<?php","",$indexfile);
+    $indexfile = str_replace("require('../../../config.php');",'', $indexfile);
+    $indexfile = str_replace("echo $OUTPUT", "// echo $OUTPUT", $indexfile);
+    $indexfile = str_replace("die;", "return;", $indexfile);
+
+    mtrace('Executing the codes.');
+    eval($indexfile);
+
+    mtrace('Codes executed, preventing any output from echo statements.');
+    $output = ob_get_clean();
+
+    mtrace('Users upload successfull.');
+    return true;
+}
+
 function getFile() {
 
     global $CFG;
@@ -144,13 +258,14 @@ function getFile() {
         else {
             //$remotedir = '/' . $config->remotedir . '/';
             $remotedir = $config->remotedir;
-            mtrace("The directory to copy from: $remotedir");
+            mtrace("The directory to copy from:" .$remotedir);
         }
         $filename = $config->masterfile;
         $tempdir = createTempDir ();
         $localdir = $CFG->dataroot . '/temp/'.$tempdir;
-        mtrace("The directory to copy to: $localdir");
+        mtrace("The directory to copy to:" .$localdir);
         $sftp = new Net_SFTP($host, $port);
+        $fileToUpload = $localdir.$filename;
 
 
         if ($config->enablekey == 0) {
@@ -170,21 +285,24 @@ function getFile() {
 
         //var_dump($sftp->rawlist());
         mtrace("Checking if the file exist or not.");
-        if (file_exists($localdir.$filename)) {
+        if (file_exists($fileToUpload)) {
             $today = time();  // Make the date stampe
             //var_dump($today);
             $today = date("Y-m-d-h-m-s",$today);
             //var_dump($today);
-            $newName = $localdir.$filename.'_processed_'.$today;
-            rename( $localdir.$filename, $newName);
+            $newName = $fileToUpload.'_processed_'.$today;
+            rename( $fileToUpload, $newName);
             mtrace("Existing file found, renamed the file to: $newName");
         }
         mtrace("Starting file transfer.");
-        $sftp->get($remotedir.$filename, $localdir.$filename);
+        $sftp->get($remotedir.$filename, $fileToUpload);
         mtrace("Transferred the file from remote directory.");
-        chmod($localdir.$filename,0777);
+        chmod($fileToUpload,0777);
         mtrace("Changed permission of the file to 0777.");
 
+        mtrace("Starting user upload.");
+        userUpload($fileToUpload);
+        mtrace("File transfer process completed.");
         /*
         if ($sftp->file_exists($remotedir.$filename)) {
             if ($sftp->is_readable($remotedir.$filename)) {
