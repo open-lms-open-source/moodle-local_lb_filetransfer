@@ -142,6 +142,16 @@ if ($hassiteconfig) {
     $description = get_string('filearchiveenabledesc','local_learnbookfiletransfer');
     $settings->add(new admin_setting_configcheckbox($name, $visiblename, $description, 0));
 
+    $oneWeek = get_string('oneweek','local_learnbookfiletransfer');
+    $twoWeeks = get_string('twoweeks','local_learnbookfiletransfer');
+    $threeWeeks = get_string('threeweeks','local_learnbookfiletransfer');
+    $fourWeeks = get_string('fourweeks','local_learnbookfiletransfer');
+    $dropdown = array($oneWeek,$twoWeeks,$threeWeeks,$fourWeeks);
+    $name = 'local_learnbookfiletransfer/filearchiveperiod';
+    $visiblename = get_string('filearchiveperiod','local_learnbookfiletransfer');
+    $description = get_string('filearchiveperioddesc','local_learnbookfiletransfer');
+    $settings->add(new admin_setting_configselect($name, $visiblename, $description, 0,$dropdown));
+
     $name = 'local_learnbookfiletransfer/uploadsetting';
     $visiblename = get_string('uploadsetting','local_learnbookfiletransfer');
     $settings->add(new admin_setting_heading($name, $visiblename, ''));
@@ -220,6 +230,6 @@ if ($hassiteconfig) {
 
     $name = 'local_learnbookfiletransfer/standardusername';
     $visiblename = get_string('standardusername','local_learnbookfiletransfer');
-    $settings = new admin_setting_configselect($name, $visiblename, '', 1,$dropdown);
+    $settings->add(new admin_setting_configselect($name, $visiblename, '', 1,$dropdown));
 
 }

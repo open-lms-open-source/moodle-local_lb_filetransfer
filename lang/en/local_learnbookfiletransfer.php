@@ -66,7 +66,9 @@ $string['connectionsuccess'] = 'Connection Status: Successfully connected to the
 
 $string['filetransfertask'] = 'Learnbook File trasfer integration.';
 $string['filearchiveenable'] = 'Enable processed file archiving.';
-$string['filearchiveenabledesc'] = 'Files will be archived in the lb_filetransfer_backup directory for 30 days.';
+$string['filearchiveenabledesc'] = 'Files will be archived in the lb_filetransfer_backup directory upto 4 weeks.';
+$string['filearchiveperiod'] = 'Select your file archive period';
+$string['filearchiveperioddesc'] = 'Selected period will be used to retain processed CSV files.';
 
 $string['connectionsetting'] = 'Connection Settings';
 $string['filesetting'] = 'File and Directory Settings';
@@ -107,3 +109,8 @@ $string['filedirectoryerrornomatch'] = 'File and directory Status: No matching f
 $string['filedirectoryerrornotreadable'] = 'File and directory Status: Remote file not readable.';
 $string['filedirectoryerrorlocal'] = 'File and directory Status: Local directory not readable.';
 $string['filedirectorysuccesse'] = 'File and directory Status: File and directory exists and readable.';
+
+$string['oneweek'] = '1 Week';
+$string['twoweeks'] = '2 Weeks';
+$string['threeweeks'] = '3 Weeks';
+$string['fourweeks'] = '4 Weeks';

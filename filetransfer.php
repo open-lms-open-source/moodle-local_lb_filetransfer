@@ -143,19 +143,29 @@ function testFileDirectory() {
     }
 }
 
-function archiveDir () {
-    //fielsystem api to be used
-    /*
+function archiveDir ($localdir,$filename) {
+    //fielsystem api to be used in the next phase
     global $CFG;
-    if (file_exists ($CFG->dataroot . '/temp/lb_filetransfer_backup')) {
+    if (file_exists ($CFG->dataroot . '/temp/lb_filetransfer/lb_filetransfer_backup')) {
         mtrace("Backup folder already exists, using existing one.");
         $backupdir = 'lb_filetransfer_backup/';
-        return $backupdir;
     }
-    $backupdir = make_temp_directory('lb_filetransfer_backup/');
-    mtrace("Created backup folder for archiving.");
-    return $backupdir;
-    */
+    else {
+        make_temp_directory('lb_filetransfer/lb_filetransfer_backup/');
+        $backupdir = 'lb_filetransfer_backup/';
+        mtrace("Created backup folder for archiving.");
+    }
+    $today = time();
+    $today = date("Y-m-d-h-m-s",$today);
+    $newExtension = '_processed_'.$today;
+    $newName = $localdir.$filename.$newExtension;
+    rename( $localdir.$filename, $newName);
+    mtrace("Renamed the file to archive.");
+    copy($newName, $localdir.$backupdir.$filename.$newExtension);
+    mtrace("Copied the file to backup directory.");
+    unlink($newName);
+    mtrace("Removed the file from the temp directory");
+    return true;
 }
 
 function createTempDir () {
@@ -165,8 +175,9 @@ function createTempDir () {
         $tempdir = 'lb_filetransfer/';
         return $tempdir;
     }
-    $tempdir = make_temp_directory('lb_filetransfer/');
+    make_temp_directory('lb_filetransfer/');
     mtrace("Created temp folder for the file.");
+    $tempdir = 'lb_filetransfer/';
     return $tempdir;
 }
 
@@ -337,9 +348,9 @@ function getFile() {
             //var_dump($today);
             $today = date("Y-m-d-h-m-s",$today);
             //var_dump($today);
-            $newName = $fileToUpload.'_processed_'.$today;
+            $newName = $fileToUpload.'_renamed_'.$today;
             rename( $fileToUpload, $newName);
-            mtrace("Existing file found, renamed the file to: $newName");
+            mtrace("Existing file found, renamed the file to:".$newName);
         }
         mtrace("Starting file transfer.");
         $sftp->get($remotedir.$filename, $fileToUpload);
@@ -356,31 +367,20 @@ function getFile() {
             mtrace("Unsuccessfull file transfer process.");
             return false;
         }
-        /*
-        if ($sftp->file_exists($remotedir.$filename)) {
-            if ($sftp->is_readable($remotedir.$filename)) {
-                $sftp->get($remotedir.$filename, $localdir.$filename);
-                mtrace("Transferred the file from remote directory.");
-            }
-            else {
-                mtrace("File is not readable.");
-                return false;
-            }
-        }
-        else {
-            mtrace("No matching file found in the remote directory.");
-            return false;
-            //return a value instead//
-        }
 
         if ($config->filearchive) {
             mtrace("Archiving uploaded file.");
-            $backupDir = archiveDir();
+            $archiving = archiveDir($localdir,$filename);
+            if ($archiving) {
+                mtrace("Archiving completed.");
+            } else {
+                mtrace("Archiving not successful.");
+            }
+        } else {
+            deleteTempDir($tempdir, $filename);
+            mtrace("Deleted temporary file.");
         }
-        mtrace("Archiving completed.");
-        deleteTempDir ($tempdir, $filename);
-        mtrace("Deleted temporary file.");
-        */
+
         return true;
     }
     else {
