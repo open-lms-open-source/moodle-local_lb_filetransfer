@@ -51,12 +51,9 @@ if ($hassiteconfig) {
             $connectionTest = $OUTPUT->notification(get_string('connectionerrorrsa', 'local_learnbookfiletransfer'), 'notifyproblem');
             break;
         case 3:
-            $connectionTest = $OUTPUT->notification(get_string('connectionerrornofile', 'local_learnbookfiletransfer'), 'notifyproblem');
-            break;
-        case 4:
             $connectionTest = $OUTPUT->notification(get_string('connectionerrornohost', 'local_learnbookfiletransfer'), 'notifyproblem');
             break;
-        case 5:
+        case 4:
             $connectionTest = $OUTPUT->notification(get_string('connectionsuccess', 'local_learnbookfiletransfer'), 'notifysuccess');
             break;
         default:
@@ -67,6 +64,10 @@ if ($hassiteconfig) {
     $name = 'local_learnbookfiletransfer/connectiontest';
     $setting = new setting_statictext($name, $connectionTest);
     $settings->add($setting);
+
+    $name = 'local_learnbookfiletransfer/connectionsetting';
+    $visiblename = get_string('connectionsetting','local_learnbookfiletransfer');
+    $settings->add(new admin_setting_heading($name, $visiblename, ''));
 
     $name = 'local_learnbookfiletransfer/host';
     $visiblename = get_string('host','local_learnbookfiletransfer');
@@ -98,6 +99,34 @@ if ($hassiteconfig) {
     $description = get_string('rsatokendesc','local_learnbookfiletransfer');
     $settings->add(new admin_setting_configtext($name, $visiblename, $description, ''));
 
+    $fileDirectoryStatus = testFileDirectory();
+    $fileDirectoryTest = $OUTPUT->notification(get_string('filedirectoryerror', 'local_learnbookfiletransfer'), 'notifyproblem');
+    switch ($fileDirectoryStatus) {
+        case 1:
+            $fileDirectoryTest = $OUTPUT->notification(get_string('filedirectoryerrornofile', 'local_learnbookfiletransfer'), 'notifyproblem');
+            break;
+        case 2:
+            $fileDirectoryTest = $OUTPUT->notification(get_string('filedirectoryerrornomatch', 'local_learnbookfiletransfer'), 'notifyproblem');
+            break;
+        case 3:
+            $fileDirectoryTest = $OUTPUT->notification(get_string('filedirectoryerrornotreadable', 'local_learnbookfiletransfer'), 'notifyproblem');
+            break;
+        case 4:
+            $fileDirectoryTest = $OUTPUT->notification(get_string('filedirectorysuccesse', 'local_learnbookfiletransfer'), 'notifysuccess');
+            break;
+        default:
+            $fileDirectoryTest = $OUTPUT->notification(get_string('filedirectoryerror', 'local_learnbookfiletransfer'), 'notifyproblem');
+            break;
+    }
+
+    $name = 'local_learnbookfiletransfer/filedirectorytest';
+    $setting = new setting_statictext($name, $fileDirectoryTest);
+    $settings->add($setting);
+
+    $name = 'local_learnbookfiletransfer/filesetting';
+    $visiblename = get_string('filesetting','local_learnbookfiletransfer');
+    $settings->add(new admin_setting_heading($name, $visiblename, ''));
+
     $name = 'local_learnbookfiletransfer/remotedir';
     $visiblename = get_string('remotedir','local_learnbookfiletransfer');
     $description = get_string('remotedirdesc','local_learnbookfiletransfer');
@@ -113,16 +142,84 @@ if ($hassiteconfig) {
     $description = get_string('filearchiveenabledesc','local_learnbookfiletransfer');
     $settings->add(new admin_setting_configcheckbox($name, $visiblename, $description, 0));
 
-    /*
-    $name = 'local_learnbookfiletransfer/emailenable';
-    $visiblename = get_string('emailenable','local_learnbookfiletransfer');
-    $description = get_string('emailenabledesc','local_learnbookfiletransfer');
-    $settings->add(new admin_setting_configcheckbox($name, $visiblename, $description, 0));
+    $name = 'local_learnbookfiletransfer/uploadsetting';
+    $visiblename = get_string('uploadsetting','local_learnbookfiletransfer');
+    $settings->add(new admin_setting_heading($name, $visiblename, ''));
 
-    $name = 'local_learnbookfiletransfer/emaillog';
-    $visiblename = get_string('emaillog','local_learnbookfiletransfer');
-    $description = get_string('emaillogdesc','local_learnbookfiletransfer');
-    $settings->add(new admin_setting_configtext($name, $visiblename, $description, ''));
-    */
+    $UU_USER_ADDNEW = get_string('uuoptype_addnew', 'local_learnbookfiletransfer');
+    $UU_USER_ADDINC = get_string('uuoptype_addinc', 'local_learnbookfiletransfer');
+    $UU_USER_ADD_UPDATE = get_string('uuoptype_addupdate', 'local_learnbookfiletransfer');
+    $UU_USER_UPDATE = get_string('uuoptype_update', 'local_learnbookfiletransfer');
+    $dropdown = array($UU_USER_ADDNEW,$UU_USER_ADDINC,$UU_USER_ADD_UPDATE,$UU_USER_UPDATE);
+
+    $name = 'local_learnbookfiletransfer/uutype';
+    $visiblename = get_string('uutype','local_learnbookfiletransfer');
+    $settings->add(new admin_setting_configselect($name, $visiblename, '', 2,$dropdown));
+
+    $infilefield = get_string('infilefield', 'local_learnbookfiletransfer');
+    $createpasswordifneeded = get_string('createpasswordifneeded', 'local_learnbookfiletransfer');
+    $dropdown = array($infilefield,$createpasswordifneeded);
+
+    $name = 'local_learnbookfiletransfer/uupasswordnew';
+    $visiblename = get_string('uupasswordnew','local_learnbookfiletransfer');
+    $settings->add(new admin_setting_configselect($name, $visiblename, '', 1,$dropdown));
+
+    $UU_UPDATE_NOCHANGES = get_string('nochanges', 'local_learnbookfiletransfer');
+    $UU_UPDATE_FILEOVERRIDE = get_string('uuupdatefromfile', 'local_learnbookfiletransfer');
+    $UU_UPDATE_ALLOVERRIDE  = get_string('uuupdateall', 'local_learnbookfiletransfer');
+    $UU_UPDATE_MISSING = get_string('uuupdatemissing', 'local_learnbookfiletransfer');
+    $dropdown = array($UU_UPDATE_NOCHANGES,$UU_UPDATE_FILEOVERRIDE,$UU_UPDATE_ALLOVERRIDE,$UU_UPDATE_MISSING);
+
+    $name = 'local_learnbookfiletransfer/uuupdatetype';
+    $visiblename = get_string('uuupdatetype','local_learnbookfiletransfer');
+    $settings->add(new admin_setting_configselect($name, $visiblename, '', 2,$dropdown));
+
+    $nochanges  = get_string('nochanges', 'local_learnbookfiletransfer');
+    $update = get_string('update', 'local_learnbookfiletransfer');
+    $dropdown = array($nochanges,$update);
+
+    $name = 'local_learnbookfiletransfer/uupasswordold';
+    $visiblename = get_string('uupasswordold','local_learnbookfiletransfer');
+    $settings->add(new admin_setting_configselect($name, $visiblename, '', 0,$dropdown));
+
+    $yes = get_string('yes', 'local_learnbookfiletransfer');
+    $no = get_string('no', 'local_learnbookfiletransfer');
+    $dropdown = array($no,$yes);
+
+    $name = 'local_learnbookfiletransfer/allowrename';
+    $visiblename = get_string('allowrename','local_learnbookfiletransfer');
+    $settings->add(new admin_setting_configselect($name, $visiblename, '', 1,$dropdown));
+
+    $yes = get_string('yes', 'local_learnbookfiletransfer');
+    $no = get_string('no', 'local_learnbookfiletransfer');
+    $dropdown = array($no,$yes);
+
+    $name = 'local_learnbookfiletransfer/allowdeletes';
+    $visiblename = get_string('allowdeletes','local_learnbookfiletransfer');
+    $settings->add(new admin_setting_configselect($name, $visiblename, '', 1,$dropdown));
+
+    $yes = get_string('yes', 'local_learnbookfiletransfer');
+    $no = get_string('no', 'local_learnbookfiletransfer');
+    $dropdown = array($no,$yes);
+
+    $name = 'local_learnbookfiletransfer/allowsuspend';
+    $visiblename = get_string('allowsuspend','local_learnbookfiletransfer');
+    $settings->add(new admin_setting_configselect($name, $visiblename, '', 1,$dropdown));
+
+    $yes = get_string('yes', 'local_learnbookfiletransfer');
+    $no = get_string('no', 'local_learnbookfiletransfer');
+    $dropdown = array($no,$yes);
+
+    $name = 'local_learnbookfiletransfer/noemailduplicate';
+    $visiblename = get_string('noemailduplicate','local_learnbookfiletransfer');
+    $settings->add(new admin_setting_configselect($name, $visiblename, '', 1,$dropdown));
+
+    $yes = get_string('yes', 'local_learnbookfiletransfer');
+    $no = get_string('no', 'local_learnbookfiletransfer');
+    $dropdown = array($no,$yes);
+
+    $name = 'local_learnbookfiletransfer/standardusername';
+    $visiblename = get_string('standardusername','local_learnbookfiletransfer');
+    $settings = new admin_setting_configselect($name, $visiblename, '', 1,$dropdown);
 
 }

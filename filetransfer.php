@@ -38,7 +38,7 @@ function connectionStatus() {
     $sftp = new Net_SFTP($host,$port);
 
     if (empty($host)) {
-        return 4;
+        return 3;
     }
     if ($config->enablekey == 0) {
         $password = $config->password;
@@ -53,11 +53,9 @@ function connectionStatus() {
             return 2;
         }
     }
-    if (empty($filename)) {
-        return 3;
-    }
-    return 5;
+    return 4;
 }
+
 
 function testConnection() {
     $config = get_config('local_learnbookfiletransfer');
@@ -91,7 +89,7 @@ function testConnection() {
     if (!empty($filename)) {
         if ($sftp->file_exists($remotedir . $filename)) {
             if (!$sftp->is_readable($remotedir . $filename)) {
-                mtrace("file not readable");
+                mtrace(" Remote file not readable");
                 return false;
             }
         }
@@ -106,6 +104,43 @@ function testConnection() {
         return false;
     }
     return true;
+}
+
+function testFileDirectory() {
+    $config = get_config('local_learnbookfiletransfer');
+    $connectionStatus = connectionStatus();
+    if ($connectionStatus == 4) {
+        $host = $config->host;
+        $port = $config->port;
+        $username = $config->username;
+        if (empty($config->remotedir)) {
+            $remotedir = '/';
+        } else {
+            $remotedir = $config->remotedir;
+        }
+        $filename = $config->masterfile;
+        //$localdir = $CFG->dataroot . '/temp/lb_filetransfer';
+        $sftp = new Net_SFTP($host, $port);
+
+        if ($config->enablekey == 0) {
+            $password = $config->password;
+            $sftp->login($username, $password);
+        } else {
+            $key = new Crypt_RSA();
+            $key->loadKey($config->rsatoken);
+            $sftp->login($username, $key);
+        }
+        if (empty($config->masterfile)) {
+            return 1;
+        }
+        if (!$sftp->file_exists($remotedir . $filename)) {
+            return 2;
+        }
+        if (!$sftp->is_readable($remotedir . $filename)) {
+            return 3;
+        }
+        return 4;
+    }
 }
 
 function archiveDir () {
@@ -156,6 +191,7 @@ function cohortSelect() {
 
 function userUpload($fileToUpload) {
     global $CFG, $DB, $USER;
+    $config = get_config('local_learnbookfiletransfer');
     $admin = get_admin();
     $USER = $admin;
 
@@ -179,18 +215,29 @@ function userUpload($fileToUpload) {
     $formdata = new stdClass();
     $_POST['iid'] = $iid;
     $_POST['previewrows'] = '10';
-    $_POST['uutype'] = UU_USER_ADD_UPDATE;
-    $_POST['uupasswordnew'] = '1';
-    $_POST['uuupdatetype'] = UU_UPDATE_ALLOVERRIDE;
-    $_POST['uupasswordold'] = '0';
-    $_POST['uuforcepasswordchange'] = UU_PWRESET_NONE;
-    $_POST['allowrenames'] = '0';
-    $_POST['uuallowdeletes'] = '0';
-    $_POST['uuallowsuspends'] = '1';
-    $_POST['uunoemailduplicates'] = '1';
-    $_POST['uustandardusernames'] = '1';
+    //$_POST['uutype'] = UU_USER_ADD_UPDATE;
+    $_POST['uutype'] = $config->uutype;
+    //$_POST['uupasswordnew'] = '1';
+    $_POST['uupasswordnew'] = $config->uupasswordnew;
+    //$_POST['uuupdatetype'] = UU_UPDATE_ALLOVERRIDE;
+    $_POST['uuupdatetype'] = $config->uuupdatetype;
+    //$_POST['uupasswordold'] = '0';
+    $_POST['uupasswordold'] = $config->uupasswordold;
+    //$_POST['uuforcepasswordchange'] = UU_PWRESET_NONE;
+    $_POST['uuforcepasswordchange'] = $config->uupasswordold;
+    //$_POST['allowrenames'] = '0';
+    $_POST['allowrenames'] = $config->allowrename;
+    //$_POST['uuallowdeletes'] = '0';
+    $_POST['uuallowdeletes'] = $config->allowdeletes;
+    //$_POST['uuallowsuspends'] = '1';
+    $_POST['uuallowsuspends'] = $config->allowsuspend;
+    //$_POST['uunoemailduplicates'] = '1';
+    $_POST['uunoemailduplicates'] = $config->noemailduplicate;
+    //$_POST['uustandardusernames'] = '1';
+    $_POST['uustandardusernames'] = $config->standardusername;
     $_POST['uubulk'] = UU_BULK_ALL;
-    $_POST['uuallowrenames'] = '0';
+    //$_POST['uuallowrenames'] = '0';
+    $_POST['uuallowrenames'] = $config->allowrename;
 
     /* //cohort select plugin doesn't accept csv upload. When that plugin is changed, this feature can be used.
     $cohortSelect = cohortSelect();
@@ -221,7 +268,7 @@ function userUpload($fileToUpload) {
     $_POST['phone1'] = '';
     $_POST['phone2'] = '';
     $_POST['address'] = '';
-    $_POST['uutype'] = UU_USER_ADD_UPDATE;
+    $_POST['uutype'] = $config->uutype;
     $_POST['submitbutton'] = 'submit';
 
     mtrace('Getting the moodle upload user codes.');
@@ -301,8 +348,14 @@ function getFile() {
         mtrace("Changed permission of the file to 0777.");
 
         mtrace("Starting user upload.");
-        userUpload($fileToUpload);
-        mtrace("File transfer process completed.");
+        $fileTransfer = userUpload($fileToUpload);
+        if ($fileTransfer) {
+            mtrace("File transfer process completed.");
+        }
+        else {
+            mtrace("Unsuccessfull file transfer process.");
+            return false;
+        }
         /*
         if ($sftp->file_exists($remotedir.$filename)) {
             if ($sftp->is_readable($remotedir.$filename)) {

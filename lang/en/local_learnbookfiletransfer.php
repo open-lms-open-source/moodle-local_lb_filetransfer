@@ -61,11 +61,49 @@ $string['emaillogdesc'] = 'Enter the emails to send the log report, e.g. example
 $string['connectionerror'] = 'Connection Status: Error connecting to the server, please check your connection information';
 $string['connectionerrorpassword'] = 'Connection Status: Error connecting to the server, please check your username and password.';
 $string['connectionerrorrsa'] = 'Connection Status: Error connecting to the server, please check your username and RSA key.';
-$string['connectionerrornofile'] = 'Connection Status: Filename is empty, please specify the filename';
 $string['connectionerrornohost'] = 'Connection Status: Hostname is empty, please specify the hostname';
 $string['connectionsuccess'] = 'Connection Status: Successfully connected to the server.';
 
 $string['filetransfertask'] = 'Learnbook File trasfer integration.';
-
 $string['filearchiveenable'] = 'Enable processed file archiving.';
 $string['filearchiveenabledesc'] = 'Files will be archived in the lb_filetransfer_backup directory for 30 days.';
+
+$string['connectionsetting'] = 'Connection Settings';
+$string['filesetting'] = 'File and Directory Settings';
+$string['uploadsetting'] = 'User Upload Settings';
+
+$string['uutype'] = 'Upload type';
+$string['uuoptype_addinc'] = 'Add all, append number to usernames if needed';
+$string['uuoptype_addnew'] = 'Add new only, skip existing users';
+$string['uuoptype_addupdate'] = 'Add new and update existing users';
+$string['uuoptype_update'] = 'Update existing users only';
+
+$string['uupasswordnew'] = 'New user password';
+$string['infilefield'] = 'Field required in file';
+$string['createpasswordifneeded'] = 'Create password if needed and send via email';
+
+$string['uuupdatetype'] = 'Existing user details';
+$string['nochanges'] = 'No changes';
+$string['uuupdatefromfile'] = 'Override with file';
+$string['uuupdateall'] = 'Override with file and defaults';
+$string['uuupdatemissing'] = 'Fill in missing from file and defaults';
+
+$string['uupasswordold'] = 'Existing user password';
+$string['nochanges'] = 'No changes';
+$string['update'] = 'Update';
+
+$string['allowrename'] = 'Allow renames';
+$string['allowdeletes'] = 'Allow deletes';
+$string['allowsuspend'] = 'Allow suspending and activating of accounts';
+$string['noemailduplicate'] = 'No duplicate email accounts';
+$string['standardusername'] = 'Standardise usernames';
+
+$string['yes'] = 'Yes';
+$string['no'] = 'No';
+
+$string['filedirectoryerror'] = 'File and directory Status: Error reading from remote directory.';
+$string['filedirectoryerrornofile'] = 'File and directory Status: Filename is empty, please specify the filename.';
+$string['filedirectoryerrornomatch'] = 'File and directory Status: No matching file found in the remote directory.';
+$string['filedirectoryerrornotreadable'] = 'File and directory Status: Remote file not readable.';
+$string['filedirectoryerrorlocal'] = 'File and directory Status: Local directory not readable.';
+$string['filedirectorysuccesse'] = 'File and directory Status: File and directory exists and readable.';
