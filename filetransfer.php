@@ -143,6 +143,45 @@ function testFileDirectory() {
     }
 }
 
+function deleteOldFiles($archiving) {
+    $config = get_config('local_learnbookfiletransfer');
+    $archivePeriod = $config->filearchiveperiod;
+    switch ($archivePeriod) {
+        case 1:
+            $days = 7;
+            break;
+        case 2:
+            $days = 14;
+            break;
+        case 3:
+            $days = 21;
+            break;
+        case 4:
+            $days = 28;
+            break;
+    }
+    $path = $archiving;
+
+    // Open the directory
+    if ($handle = opendir($path))
+    {
+        // Loop through the directory
+        while (false !== ($file = readdir($handle)))
+        {
+            // Check the file we're doing is actually a file
+            if (is_file($path.$file))
+            {
+                // Check if the file is older than X days old
+                if (filemtime($path.$file) < ( time() - ( $days * 24 * 60 * 60 ) ) )
+                {
+                    // Do the deletion
+                    unlink($path.$file);
+                }
+            }
+        }
+    }
+}
+
 function archiveDir ($localdir,$filename) {
     //fielsystem api to be used in the next phase
     global $CFG;
@@ -165,7 +204,9 @@ function archiveDir ($localdir,$filename) {
     mtrace("Copied the file to backup directory.");
     unlink($newName);
     mtrace("Removed the file from the temp directory");
-    return true;
+    $archiveDir = $localdir.$backupdir;
+    mtrace("Archiving completed");
+    return $archiveDir;
 }
 
 function createTempDir () {
@@ -371,16 +412,13 @@ function getFile() {
         if ($config->filearchive) {
             mtrace("Archiving uploaded file.");
             $archiving = archiveDir($localdir,$filename);
-            if ($archiving) {
-                mtrace("Archiving completed.");
-            } else {
-                mtrace("Archiving not successful.");
-            }
         } else {
             deleteTempDir($tempdir, $filename);
             mtrace("Deleted temporary file.");
         }
-
+        mtrace("Deleting old files.");
+        deleteOldFiles($archiving);
+        mtrace("Deleted old files.");
         return true;
     }
     else {
