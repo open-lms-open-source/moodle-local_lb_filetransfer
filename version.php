@@ -26,6 +26,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_learnbookfiletransfer';
 $plugin->release = '1.1.0';
-$plugin->version = 2019083004;
+$plugin->version = 2019090201;
 $plugin->requires = 2018120300;
 $plugin->maturity = MATURITY_STABLE;

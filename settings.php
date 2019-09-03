@@ -1,24 +1,9 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Plugin administration pages are defined here.
  *
  * @package     local_learnbookfiletransfer
- * @category    admin
  * @copyright   2019 A K M Safat Shahin <safat@ecreators.com.au>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,7 +12,6 @@ defined('MOODLE_INTERNAL') || die();
 
 use local_learnbookfiletransfer\settings\setting_statictext;
 
-//if ($ADMIN->fulltree) {
 if ($hassiteconfig) {
     require_once(__DIR__.'/classes/settings/setting_statictext.php');
     require_once($CFG->dirroot.'/local/learnbookfiletransfer/filetransfer.php');
@@ -36,11 +20,6 @@ if ($hassiteconfig) {
     $settings = new admin_settingpage('local_learnbookfiletransfer', new lang_string('pluginname', 'local_learnbookfiletransfer'));
     $ADMIN->add('localplugins', $settings);
     $settings->add(new admin_setting_heading('local_learnbookfiletransfer', '', get_string('pluginname_description', 'local_learnbookfiletransfer')));
-    /*
-    $connectiontest = $OUTPUT->notification(get_string('connectionerror', 'local_learnbookfiletransfer'), 'notifyproblem');
-    if (connectionStatus()) {
-    $connectiontest = $OUTPUT->notification(get_string('connectionsuccess', 'local_learnbookfiletransfer'), 'notifysuccess');
-    }*/
     $connectionStatus = connectionStatus();
     $connectionTest = $OUTPUT->notification(get_string('connectionerror', 'local_learnbookfiletransfer'), 'notifyproblem');
     switch ($connectionStatus){
@@ -156,11 +135,11 @@ if ($hassiteconfig) {
     $visiblename = get_string('uploadsetting','local_learnbookfiletransfer');
     $settings->add(new admin_setting_heading($name, $visiblename, ''));
 
-    $UU_USER_ADDNEW = get_string('uuoptype_addnew', 'local_learnbookfiletransfer');
-    $UU_USER_ADDINC = get_string('uuoptype_addinc', 'local_learnbookfiletransfer');
-    $UU_USER_ADD_UPDATE = get_string('uuoptype_addupdate', 'local_learnbookfiletransfer');
-    $UU_USER_UPDATE = get_string('uuoptype_update', 'local_learnbookfiletransfer');
-    $dropdown = array($UU_USER_ADDNEW,$UU_USER_ADDINC,$UU_USER_ADD_UPDATE,$UU_USER_UPDATE);
+    $uu_user_addnew = get_string('uuoptype_addnew', 'local_learnbookfiletransfer');
+    $uu_user_addinc = get_string('uuoptype_addinc', 'local_learnbookfiletransfer');
+    $uu_user_add_update = get_string('uuoptype_addupdate', 'local_learnbookfiletransfer');
+    $uu_user_update = get_string('uuoptype_update', 'local_learnbookfiletransfer');
+    $dropdown = array($uu_user_addnew,$uu_user_addinc,$uu_user_add_update,$uu_user_update);
 
     $name = 'local_learnbookfiletransfer/uutype';
     $visiblename = get_string('uutype','local_learnbookfiletransfer');
@@ -174,11 +153,11 @@ if ($hassiteconfig) {
     $visiblename = get_string('uupasswordnew','local_learnbookfiletransfer');
     $settings->add(new admin_setting_configselect($name, $visiblename, '', 1,$dropdown));
 
-    $UU_UPDATE_NOCHANGES = get_string('nochanges', 'local_learnbookfiletransfer');
-    $UU_UPDATE_FILEOVERRIDE = get_string('uuupdatefromfile', 'local_learnbookfiletransfer');
-    $UU_UPDATE_ALLOVERRIDE  = get_string('uuupdateall', 'local_learnbookfiletransfer');
-    $UU_UPDATE_MISSING = get_string('uuupdatemissing', 'local_learnbookfiletransfer');
-    $dropdown = array($UU_UPDATE_NOCHANGES,$UU_UPDATE_FILEOVERRIDE,$UU_UPDATE_ALLOVERRIDE,$UU_UPDATE_MISSING);
+    $uu_update_nochanges = get_string('nochanges', 'local_learnbookfiletransfer');
+    $uu_update_fileoverride = get_string('uuupdatefromfile', 'local_learnbookfiletransfer');
+    $uu_update_alloverride  = get_string('uuupdateall', 'local_learnbookfiletransfer');
+    $uu_update_missing = get_string('uuupdatemissing', 'local_learnbookfiletransfer');
+    $dropdown = array($uu_update_nochanges,$uu_update_fileoverride,$uu_update_alloverride,$uu_update_missing);
 
     $name = 'local_learnbookfiletransfer/uuupdatetype';
     $visiblename = get_string('uuupdatetype','local_learnbookfiletransfer');
