@@ -17,7 +17,7 @@
 /**
  * Plugin upgrade steps are defined here.
  *
- * @package     local_learnbookfiletransfer
+ * @package     local_lb_filetransfer
  * @category    upgrade
  * @copyright   2019 eCreators <safat@ecreators.com.au>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -28,12 +28,12 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__.'/upgradelib.php');
 
 /**
- * Execute local_learnbookfiletransfer upgrade from the given old version.
+ * Execute local_lb_filetransfer upgrade from the given old version.
  *
  * @param int $oldversion
  * @return bool
  */
-function xmldb_local_learnbookfiletransfer_upgrade($oldversion) {
+function xmldb_local_lb_filetransfer_upgrade($oldversion) {
     global $DB;
 
     $dbman = $DB->get_manager();

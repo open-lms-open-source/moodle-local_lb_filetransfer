@@ -19,7 +19,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace local_learnbookfiletransfer\settings;
+namespace local_lb_filetransfer\settings;
 
 defined('MOODLE_INTERNAL') || die();
 

@@ -17,7 +17,7 @@
 /**
  * Plugin upgrade helper functions are defined here.
  *
- * @package     local_learnbookfiletransfer
+ * @package     local_lb_filetransfer
  * @category    upgrade
  * @copyright   2019 eCreators <safat@ecreators.com.au>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Helper function used by the upgrade.php file.
  */
-function local_learnbookfiletransfer_helper_function() {
+function local_lb_filetransfer_helper_function() {
     global $DB;
 
     // Please note that you should always be performing any task using raw (low

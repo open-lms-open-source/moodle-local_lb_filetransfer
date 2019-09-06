@@ -3,7 +3,7 @@
 /**
  * Plugin administration pages are defined here.
  *
- * @package     local_learnbookfiletransfer
+ * @package     local_lb_filetransfer
  * @category    admin
  * @copyright   2019 A K M Safat Shahin <safat@ecreators.com.au>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -11,9 +11,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
-set_include_path(get_include_path(). PATH_SEPARATOR . $CFG->dirroot.'/local/learnbookfiletransfer/lib/phpseclib');
-require_once($CFG->dirroot .'/local/learnbookfiletransfer/lib/phpseclib/Net/SFTP.php');
-require_once($CFG->dirroot .'/local/learnbookfiletransfer/lib/phpseclib/Crypt/RSA.php');
+set_include_path(get_include_path(). PATH_SEPARATOR . $CFG->dirroot.'/local/lb_filetransfer/lib/phpseclib');
+require_once($CFG->dirroot .'/local/lb_filetransfer/lib/phpseclib/Net/SFTP.php');
+require_once($CFG->dirroot .'/local/lb_filetransfer/lib/phpseclib/Crypt/RSA.php');
 
 require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->libdir.'/csvlib.class.php');
@@ -24,13 +24,8 @@ require_once($CFG->dirroot.'/cohort/lib.php');
 require_once($CFG->dirroot.'/admin/tool/uploaduser/locallib.php');
 require_once($CFG->dirroot.'/admin/tool/uploaduser/user_form.php');
 
-
-//set_include_path(get_include_path(). PATH_SEPARATOR .'/Applications/MAMP/htdocs/moodle/local/learnbookfiletransfer/lib/phpseclib');
-//require_once('/Applications/MAMP/htdocs/moodle/local/learnbookfiletransfer/lib/phpseclib/Net/SFTP.php');
-//require_once('/Applications/MAMP/htdocs/moodle/local/learnbookfiletransfer/lib/phpseclib/Crypt/RSA.php');
-
 function connectionStatus() {
-    $config = get_config('local_learnbookfiletransfer');
+    $config = get_config('local_lb_filetransfer');
     $host = $config->host;
     $port = $config->port;
     $filename = $config->masterfile;
@@ -58,8 +53,12 @@ function connectionStatus() {
 
 
 function testConnection() {
-    $config = get_config('local_learnbookfiletransfer');
+    $config = get_config('local_lb_filetransfer');
     $host = $config->host;
+    if (empty($host)) {
+        eventDescription (get_string('connectionerrornohost', 'local_lb_filetransfer'));
+        return false;
+    }
     $port = $config->port;
     $username = $config->username;
     $sftp = new Net_SFTP($host,$port);
@@ -74,8 +73,7 @@ function testConnection() {
     if ($config->enablekey == 0) {
         $password = $config->password;
         if (!$sftp->login($username, $password)) {
-            //mtrace("Connection error: Username or password not correct");
-            eventDescription (get_string('connectionerrorpassword', 'local_learnbookfiletransfer'));
+            eventDescription (get_string('connectionerrorpassword', 'local_lb_filetransfer'));
             return false;
         }
     }
@@ -83,36 +81,31 @@ function testConnection() {
         $key = new Crypt_RSA();
         $key->loadKey($config->rsatoken);
         if (!$sftp->login($username, $key)) {
-            //mtrace("Connection error: Username or RSA not correct");
-            eventDescription (get_string('connectionerrorrsa', 'local_learnbookfiletransfer'));
+            eventDescription (get_string('connectionerrorrsa', 'local_lb_filetransfer'));
             return false;
         }
     }
     if (!empty($filename)) {
         if ($sftp->file_exists($remotedir . $filename)) {
             if (!$sftp->is_readable($remotedir . $filename)) {
-                //mtrace(" Remote file not readable");
-                eventDescription (get_string('filedirectoryerror', 'local_learnbookfiletransfer'));
+                eventDescription (get_string('filedirectoryerror', 'local_lb_filetransfer'));
                 return false;
             }
         }
         else {
-            //mtrace("No matching file found in the remote directory.");
-            eventDescription (get_string('filedirectoryerrornomatch', 'local_learnbookfiletransfer'));
+            eventDescription (get_string('filedirectoryerrornomatch', 'local_lb_filetransfer'));
             return false;
-            //return a value instead//
         }
     }
     else {
-        //mtrace("Filename is empty");
-        eventDescription (get_string('filedirectoryerrornofile', 'local_learnbookfiletransfer'));
+        eventDescription (get_string('filedirectoryerrornofile', 'local_lb_filetransfer'));
         return false;
     }
     return true;
 }
 
 function testFileDirectory() {
-    $config = get_config('local_learnbookfiletransfer');
+    $config = get_config('local_lb_filetransfer');
     $connectionStatus = connectionStatus();
     if ($connectionStatus == 4) {
         $host = $config->host;
@@ -124,7 +117,6 @@ function testFileDirectory() {
             $remotedir = $config->remotedir;
         }
         $filename = $config->masterfile;
-        //$localdir = $CFG->dataroot . '/temp/lb_filetransfer';
         $sftp = new Net_SFTP($host, $port);
 
         if ($config->enablekey == 0) {
@@ -149,7 +141,7 @@ function testFileDirectory() {
 }
 
 function deleteOldFiles($archiving) {
-    $config = get_config('local_learnbookfiletransfer');
+    $config = get_config('local_lb_filetransfer');
     $archivePeriod = $config->filearchiveperiod;
     switch ($archivePeriod) {
         case 1:
@@ -238,7 +230,7 @@ function eventDescription ($description) {
 }
 
 function eventTrigger ($description) {
-    $event = \local_learnbookfiletransfer\event\filetransfer_event::create(array(
+    $event = \local_lb_filetransfer\event\filetransfer_event::create(array(
             'other' => $description
     ));
     $event->trigger();
@@ -260,19 +252,19 @@ function cohortSelect() {
 
 function userUpload($fileToUpload) {
     global $CFG, $DB, $USER;
-    $config = get_config('local_learnbookfiletransfer');
+    $config = get_config('local_lb_filetransfer');
     $admin = get_admin();
     $USER = $admin;
 
     mtrace('Setting encoding and delimiter.');
-    $encoding = 'UTF-8'; // TODO: Identify File Encoding Type
+    $encoding = 'UTF-8';
     $delimiter_name = 'comma';
 
     mtrace('Processing the file.');
     $filepath = $fileToUpload;
     $iid = csv_import_reader::get_new_iid('uploaduser');
     $cir = new csv_import_reader($iid, 'uploaduser');
-    $content = file_get_contents($filepath); // TODO - Map to Currect Location
+    $content = file_get_contents($filepath);
     if(!$content) {
         mtrace("No file was found at ".$filepath);
         return true;
@@ -354,7 +346,6 @@ function userUpload($fileToUpload) {
         eval($indexfile);
     }
     catch (Exception $e) {
-        //eventDescription (get_string('filetransfererrorcsv', 'local_learnbookfiletransfer'));
         $output = ob_get_clean();
         return false;
     }
@@ -369,9 +360,10 @@ function userUpload($fileToUpload) {
 function getFile() {
 
     global $CFG;
-    $config = get_config('local_learnbookfiletransfer');
+    $config = get_config('local_lb_filetransfer');
 
     if (testConnection()) {
+        eventDescription (get_string('filetransferstarted', 'local_lb_filetransfer'));
         $host = $config->host;
         $port = $config->port;
         $username = $config->username;
@@ -409,10 +401,8 @@ function getFile() {
         //var_dump($sftp->rawlist());
         mtrace("Checking if the file exist or not.");
         if (file_exists($fileToUpload)) {
-            $today = time();  // Make the date stampe
-            //var_dump($today);
+            $today = time();  // Make the date stamp
             $today = date("Y-m-d-h-m-s",$today);
-            //var_dump($today);
             $newName = $fileToUpload.'_renamed_'.$today;
             rename( $fileToUpload, $newName);
             mtrace("Existing file found, renamed the file to:".$newName);
@@ -429,8 +419,7 @@ function getFile() {
             mtrace("File transfer process completed.");
         }
         else {
-            //mtrace("Unsuccessfull file transfer process.");
-            eventDescription (get_string('filetransfererrorcsv', 'local_learnbookfiletransfer'));
+            eventDescription (get_string('filetransfererrorcsv', 'local_lb_filetransfer'));
             return false;
         }
 
@@ -443,16 +432,11 @@ function getFile() {
             deleteTempDir($tempdir, $filename);
             mtrace("Deleted temporary file.");
         }
-        //mtrace("Deleting old files.");
-        //$description = get_string('filetransfersuccess', 'local_learnbookfiletransfer');
-        eventDescription (get_string('filetransfersuccess', 'local_learnbookfiletransfer'));
+        eventDescription (get_string('filetransfersuccess', 'local_lb_filetransfer'));
         return true;
     }
     else {
-        //$description = "";
-        //mtrace($description);
-        //eventTrigger ($description);
-        eventDescription (get_string('filetransfererror', 'local_learnbookfiletransfer'));
+        eventDescription (get_string('filetransfererror', 'local_lb_filetransfer'));
         return false;
     }
 }

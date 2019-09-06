@@ -3,7 +3,7 @@
 /**
  * Plugin strings are defined here.
  *
- * @package     local_learnbookfiletransfer
+ * @package     local_lb_filetransfer
  * @category    string
  * @copyright   2019 A K M Safat Shahin <safat@ecreators.com.au>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -101,6 +101,7 @@ $string['twoweeks'] = '2 Weeks';
 $string['threeweeks'] = '3 Weeks';
 $string['fourweeks'] = '4 Weeks';
 
+$string['filetransferstarted'] = 'File transfer process started.';
 $string['filetransferevent'] = 'User upload process';
 $string['filetransfersuccess'] = 'File Transfer process and user upload completed successfully.';
 $string['filetransfererror'] = 'Error, can not get file from remote directory';

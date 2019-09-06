@@ -3,12 +3,12 @@
 /**
  * Plugin version and other meta-data are defined here.
  *
- * @package     local_learnbookfiletransfer
+ * @package     local_lb_filetransfer
  * @copyright   2019 A K M Safat Shahin <safat@ecreators.com.au>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace local_learnbookfiletransfer\event;
+namespace local_lb_filetransfer\event;
 
 use core\event\base;
 
@@ -23,7 +23,7 @@ class filetransfer_event extends base {
     }
 
     public static function get_name() {
-        return get_string('filetransferevent', 'local_learnbookfiletransfer');
+        return get_string('filetransferevent', 'local_lb_filetransfer');
     }
 
     public function get_description() {
