@@ -100,3 +100,8 @@ $string['oneweek'] = '1 Week';
 $string['twoweeks'] = '2 Weeks';
 $string['threeweeks'] = '3 Weeks';
 $string['fourweeks'] = '4 Weeks';
+
+$string['filetransferevent'] = 'User upload process';
+$string['filetransfersuccess'] = 'File Transfer process and user upload completed successfully.';
+$string['filetransfererror'] = 'Error, can not get file from remote directory';
+$string['filetransfererrorcsv'] = 'User upload not successful, check the uploaded CSV.';

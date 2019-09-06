@@ -74,7 +74,8 @@ function testConnection() {
     if ($config->enablekey == 0) {
         $password = $config->password;
         if (!$sftp->login($username, $password)) {
-            mtrace("Connection error: Username or password not correct");
+            //mtrace("Connection error: Username or password not correct");
+            eventDescription (get_string('connectionerrorpassword', 'local_learnbookfiletransfer'));
             return false;
         }
     }
@@ -82,25 +83,29 @@ function testConnection() {
         $key = new Crypt_RSA();
         $key->loadKey($config->rsatoken);
         if (!$sftp->login($username, $key)) {
-            mtrace("Connection error: Username or RSA not correct");
+            //mtrace("Connection error: Username or RSA not correct");
+            eventDescription (get_string('connectionerrorrsa', 'local_learnbookfiletransfer'));
             return false;
         }
     }
     if (!empty($filename)) {
         if ($sftp->file_exists($remotedir . $filename)) {
             if (!$sftp->is_readable($remotedir . $filename)) {
-                mtrace(" Remote file not readable");
+                //mtrace(" Remote file not readable");
+                eventDescription (get_string('filedirectoryerror', 'local_learnbookfiletransfer'));
                 return false;
             }
         }
         else {
-            mtrace("No matching file found in the remote directory.");
+            //mtrace("No matching file found in the remote directory.");
+            eventDescription (get_string('filedirectoryerrornomatch', 'local_learnbookfiletransfer'));
             return false;
             //return a value instead//
         }
     }
     else {
-        mtrace("Filename is empty");
+        //mtrace("Filename is empty");
+        eventDescription (get_string('filedirectoryerrornofile', 'local_learnbookfiletransfer'));
         return false;
     }
     return true;
@@ -227,6 +232,18 @@ function deleteTempDir ($tempdir, $filename) {
     mtrace("Deleted temp folder created for the file.");
 }
 
+function eventDescription ($description) {
+    mtrace($description);
+    eventTrigger ($description);
+}
+
+function eventTrigger ($description) {
+    $event = \local_learnbookfiletransfer\event\filetransfer_event::create(array(
+            'other' => $description
+    ));
+    $event->trigger();
+}
+
 //cohort select plugin doesn't accept csv upload. When that plugin is changed, this feature can be used.
 function cohortSelect() {
     global $DB;
@@ -333,7 +350,14 @@ function userUpload($fileToUpload) {
     $indexfile = str_replace("die;", "return;", $indexfile);
 
     mtrace('Executing the codes.');
-    eval($indexfile);
+    try {
+        eval($indexfile);
+    }
+    catch (Exception $e) {
+        //eventDescription (get_string('filetransfererrorcsv', 'local_learnbookfiletransfer'));
+        $output = ob_get_clean();
+        return false;
+    }
 
     mtrace('Codes executed, preventing any output from echo statements.');
     $output = ob_get_clean();
@@ -405,24 +429,30 @@ function getFile() {
             mtrace("File transfer process completed.");
         }
         else {
-            mtrace("Unsuccessfull file transfer process.");
+            //mtrace("Unsuccessfull file transfer process.");
+            eventDescription (get_string('filetransfererrorcsv', 'local_learnbookfiletransfer'));
             return false;
         }
 
         if ($config->filearchive) {
             mtrace("Archiving uploaded file.");
             $archiving = archiveDir($localdir,$filename);
+            deleteOldFiles($archiving);
+            mtrace("Deleted old files.");
         } else {
             deleteTempDir($tempdir, $filename);
             mtrace("Deleted temporary file.");
         }
-        mtrace("Deleting old files.");
-        deleteOldFiles($archiving);
-        mtrace("Deleted old files.");
+        //mtrace("Deleting old files.");
+        //$description = get_string('filetransfersuccess', 'local_learnbookfiletransfer');
+        eventDescription (get_string('filetransfersuccess', 'local_learnbookfiletransfer'));
         return true;
     }
     else {
-        mtrace("The connection is not successful, can not get file from remote directory");
+        //$description = "";
+        //mtrace($description);
+        //eventTrigger ($description);
+        eventDescription (get_string('filetransfererror', 'local_learnbookfiletransfer'));
         return false;
     }
 }
