@@ -20,29 +20,29 @@ if ($hassiteconfig) {
     $settings = new admin_settingpage('local_lb_filetransfer', new lang_string('pluginname', 'local_lb_filetransfer'));
     $ADMIN->add('localplugins', $settings);
     $settings->add(new admin_setting_heading('local_lb_filetransfer', '', get_string('pluginname_description', 'local_lb_filetransfer')));
-    $connectionStatus = connectionStatus();
-    $connectionTest = $OUTPUT->notification(get_string('connectionerror', 'local_lb_filetransfer'), 'notifyproblem');
-    switch ($connectionStatus){
-        case 1:
-            $connectionTest = $OUTPUT->notification(get_string('connectionerrorpassword', 'local_lb_filetransfer'), 'notifyproblem');
-            break;
-        case 2:
-            $connectionTest = $OUTPUT->notification(get_string('connectionerrorrsa', 'local_lb_filetransfer'), 'notifyproblem');
-            break;
-        case 3:
-            $connectionTest = $OUTPUT->notification(get_string('connectionerrornohost', 'local_lb_filetransfer'), 'notifyproblem');
-            break;
-        case 4:
-            $connectionTest = $OUTPUT->notification(get_string('connectionsuccess', 'local_lb_filetransfer'), 'notifysuccess');
-            break;
-        default:
-            $connectionTest = $OUTPUT->notification(get_string('connectionerror', 'local_lb_filetransfer'), 'notifyproblem');
-            break;
-    }
-
-    $name = 'local_lb_filetransfer/connectiontest';
-    $setting = new setting_statictext($name, $connectionTest);
-    $settings->add($setting);
+//    $connectionStatus = connectionStatus();
+//    $connectionTest = $OUTPUT->notification(get_string('connectionerror', 'local_lb_filetransfer'), 'notifyproblem');
+//    switch ($connectionStatus){
+//        case 1:
+//            $connectionTest = $OUTPUT->notification(get_string('connectionerrorpassword', 'local_lb_filetransfer'), 'notifyproblem');
+//            break;
+//        case 2:
+//            $connectionTest = $OUTPUT->notification(get_string('connectionerrorrsa', 'local_lb_filetransfer'), 'notifyproblem');
+//            break;
+//        case 3:
+//            $connectionTest = $OUTPUT->notification(get_string('connectionerrornohost', 'local_lb_filetransfer'), 'notifyproblem');
+//            break;
+//        case 4:
+//            $connectionTest = $OUTPUT->notification(get_string('connectionsuccess', 'local_lb_filetransfer'), 'notifysuccess');
+//            break;
+//        default:
+//            $connectionTest = $OUTPUT->notification(get_string('connectionerror', 'local_lb_filetransfer'), 'notifyproblem');
+//            break;
+//    }
+//
+//    $name = 'local_lb_filetransfer/connectiontest';
+//    $setting = new setting_statictext($name, $connectionTest);
+//    $settings->add($setting);
 
     $name = 'local_lb_filetransfer/connectionsetting';
     $visiblename = get_string('connectionsetting','local_lb_filetransfer');
@@ -78,29 +78,29 @@ if ($hassiteconfig) {
     $description = get_string('rsatokendesc','local_lb_filetransfer');
     $settings->add(new admin_setting_configtext($name, $visiblename, $description, ''));
 
-    $fileDirectoryStatus = testFileDirectory();
-    $fileDirectoryTest = $OUTPUT->notification(get_string('filedirectoryerror', 'local_lb_filetransfer'), 'notifyproblem');
-    switch ($fileDirectoryStatus) {
-        case 1:
-            $fileDirectoryTest = $OUTPUT->notification(get_string('filedirectoryerrornofile', 'local_lb_filetransfer'), 'notifyproblem');
-            break;
-        case 2:
-            $fileDirectoryTest = $OUTPUT->notification(get_string('filedirectoryerrornomatch', 'local_lb_filetransfer'), 'notifyproblem');
-            break;
-        case 3:
-            $fileDirectoryTest = $OUTPUT->notification(get_string('filedirectoryerrornotreadable', 'local_lb_filetransfer'), 'notifyproblem');
-            break;
-        case 4:
-            $fileDirectoryTest = $OUTPUT->notification(get_string('filedirectorysuccesse', 'local_lb_filetransfer'), 'notifysuccess');
-            break;
-        default:
-            $fileDirectoryTest = $OUTPUT->notification(get_string('filedirectoryerror', 'local_lb_filetransfer'), 'notifyproblem');
-            break;
-    }
-
-    $name = 'local_lb_filetransfer/filedirectorytest';
-    $setting = new setting_statictext($name, $fileDirectoryTest);
-    $settings->add($setting);
+//    $fileDirectoryStatus = testFileDirectory();
+//    $fileDirectoryTest = $OUTPUT->notification(get_string('filedirectoryerror', 'local_lb_filetransfer'), 'notifyproblem');
+//    switch ($fileDirectoryStatus) {
+//        case 1:
+//            $fileDirectoryTest = $OUTPUT->notification(get_string('filedirectoryerrornofile', 'local_lb_filetransfer'), 'notifyproblem');
+//            break;
+//        case 2:
+//            $fileDirectoryTest = $OUTPUT->notification(get_string('filedirectoryerrornomatch', 'local_lb_filetransfer'), 'notifyproblem');
+//            break;
+//        case 3:
+//            $fileDirectoryTest = $OUTPUT->notification(get_string('filedirectoryerrornotreadable', 'local_lb_filetransfer'), 'notifyproblem');
+//            break;
+//        case 4:
+//            $fileDirectoryTest = $OUTPUT->notification(get_string('filedirectorysuccesse', 'local_lb_filetransfer'), 'notifysuccess');
+//            break;
+//        default:
+//            $fileDirectoryTest = $OUTPUT->notification(get_string('filedirectoryerror', 'local_lb_filetransfer'), 'notifyproblem');
+//            break;
+//    }
+//
+//    $name = 'local_lb_filetransfer/filedirectorytest';
+//    $setting = new setting_statictext($name, $fileDirectoryTest);
+//    $settings->add($setting);
 
     $name = 'local_lb_filetransfer/filesetting';
     $visiblename = get_string('filesetting','local_lb_filetransfer');
