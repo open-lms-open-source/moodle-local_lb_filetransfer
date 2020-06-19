@@ -37,13 +37,72 @@ function xmldb_local_lb_filetransfer_upgrade($oldversion) {
     global $DB;
 
     $dbman = $DB->get_manager();
+    if ($oldversion < 20200061804) {
+        $table = new xmldb_table('local_lb_filetr_connections');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+        $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null);
+        $table->add_field('connectiontype', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null);
+        $table->add_field('hostname', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null);
+        $table->add_field('portnumber', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null);
+        $table->add_field('username', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null);
+        $table->add_field('password', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null);
+        $table->add_field('usepublickey', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 0);
+        $table->add_field('privatekey', XMLDB_TYPE_CHAR, '1024', null, XMLDB_NOTNULL, null);
+        $table->add_field('active', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 1);
+        $table ->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null);
+        $table ->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null);
+        $table ->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null);
 
-    // For further information please read the Upgrade API documentation:
-    // https://docs.moodle.org/dev/Upgrade_API
-    //
-    // You will also have to create the db/install.xml file by using the XMLDB Editor.
-    // Documentation for the XMLDB Editor can be found at:
-    // https://docs.moodle.org/dev/XMLDB_editor
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, array('usermodified'), 'user', 'id');
+
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        $table = new xmldb_table('local_lb_filetr_uploads');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+        $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null);
+        $table->add_field('connectionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null);
+        $table->add_field('pathtofile', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null);
+        $table->add_field('filename', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null);
+        $table->add_field('archivefile', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 0);
+        $table->add_field('archiveperiod', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
+        $table->add_field('active', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 1);
+        $table ->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null);
+        $table ->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null);
+        $table ->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null);
+
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('connection', XMLDB_KEY_FOREIGN, array('connectionid'), 'local_lb_filetr_connections', 'id');
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, array('usermodified'), 'user', 'id');
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        $table = new xmldb_table('local_lb_filetr_reports');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+        $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null);
+        $table->add_field('connectionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null);
+        $table->add_field('configurablereportid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null);
+        $table->add_field('pathtofile', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null);
+        $table->add_field('filename', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null);
+        $table->add_field('archivefile', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 0);
+        $table->add_field('archiveperiod', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
+        $table->add_field('email', XMLDB_TYPE_CHAR, '1024', null, XMLDB_NOTNULL, null);
+        $table->add_field('active', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 1);
+        $table ->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null);
+        $table ->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null);
+        $table ->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null);
+
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('connection', XMLDB_KEY_FOREIGN, array('connectionid'), 'local_lb_filetr_connections', 'id');
+        $table->add_key('report', XMLDB_KEY_FOREIGN, array('configurablereportid'), 'block_configurable_reports', 'id');
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, array('usermodified'), 'user', 'id');
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+    }
 
     return true;
 }

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/lb_filetransfer/db" VERSION="20141018" COMMENT="XMLDB file for Moodle local/lb_filetransfer"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
+    <TABLES>
+        <TABLE NAME="local_lb_filetr_connections" COMMENT="Learnbook File Transfer Connections">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="connectiontype" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="hostname" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="portnumber" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="username" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
+                <FIELD NAME="password" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
+                <FIELD NAME="usepublickey" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" DEFAULT="0"/>
+                <FIELD NAME="privatekey" TYPE="char" LENGTH="1024" NOTNULL="false" SEQUENCE="false" />
+                <FIELD NAME="active" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" DEFAULT="1"/>
+                <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="usermodified" TYPE="foreign" FIELDS="usermodified" REFTABLE="user" REFFIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="local_lb_filetr_uploads" COMMENT="Learnbook File Transfer User Uploads">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="connectionid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="pathtofile" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="filename" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
+                <FIELD NAME="archivefile" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" DEFAULT="0"/>
+                <FIELD NAME="archiveperiod" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" DEFAULT="0"/>
+                <FIELD NAME="active" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" DEFAULT="1"/>
+                <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="connection" TYPE="foreign" FIELDS="connectionid" REFTABLE="local_lb_filetr_connections" REFFIELDS="id"/>
+                <KEY NAME="usermodified" TYPE="foreign" FIELDS="usermodified" REFTABLE="user" REFFIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="local_lb_filetr_reports" COMMENT="Learnbook File Transfer Outgoing Reports">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="connectionid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="configurablereportid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="pathtofile" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="filename" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
+                <FIELD NAME="archivefile" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" DEFAULT="0"/>
+                <FIELD NAME="archiveperiod" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" DEFAULT="0"/>
+                <FIELD NAME="email" TYPE="char" LENGTH="1024" NOTNULL="false" SEQUENCE="false" />
+                <FIELD NAME="active" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" DEFAULT="1"/>
+                <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="connection" TYPE="foreign" FIELDS="connectionid" REFTABLE="local_lb_filetr_connections" REFFIELDS="id"/>
+                <KEY NAME="report" TYPE="foreign" FIELDS="configurablereport" REFTABLE="block_configurable_reports" REFFIELDS="id"/>
+                <KEY NAME="usermodified" TYPE="foreign" FIELDS="usermodified" REFTABLE="user" REFFIELDS="id"/>
+            </KEYS>
+        </TABLE>
+    </TABLES>
+</XMLDB>
