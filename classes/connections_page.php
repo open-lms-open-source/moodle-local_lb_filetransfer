@@ -9,6 +9,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die;
+require($CFG->dirroot.'/local/lb_filetransfer/classes/lb_filetransfer_constants.php');
 
 /**
  * Class connections_page represents a connections object.
@@ -16,15 +17,21 @@ defined('MOODLE_INTERNAL') || die;
 
 class connections_page {
 
-    private $returnfields = 'id, name, active, timemodified, timecreated';
-
-    public $active = 0;
     public $name = null;
+    public $connectiontype = lb_filetransfer_constants::CONNECTION_SFTP;
+    public $hostname = null;
+    public $portnumber = 22;
+    public $username = null;
+    public $password = null;
+    public $usepublickey = 0;
+    public $privatekey = null;
+    public $active = 0;
 
     /**
      * connections_page constructor.
      * Builds object if $id provided.
      * @param null $id
+     * @throws dml_exception
      */
     public function __construct($id = null) {
         if (!empty($id)) {
@@ -52,37 +59,7 @@ class connections_page {
     }
 
     /**
-     * Let's reduce those page load times, people.
-     * @throws dml_exception
-     */
-//    public function create_cache() {
-//        // Sets up the cache object.
-//        $cache = cache::make('local_lb_filetransfer', 'local_lb_filetransfer_cache');
-//        // Delete previous frontpage cache, if it exists.
-//        $cache->delete('cachehtml');
-//        ob_start();
-//        $context = context_system::instance();
-//        // Make real URLs out of Moodle plugin URLs.
-//        $html = file_rewrite_pluginfile_urls($this->html, 'pluginfile.php', $context->id,
-//            'local_lb_filetransfer', 'customfrontpage', $this->id);
-//        // Add styles.
-//        if (!empty($this->css)) {
-//            echo '<style type="text/css">' . $this->css . '</style>';
-//        }
-//        // Add HTML.
-//        echo $html;
-//        // Add JavaScript.
-//        if (!empty($this->js)) {
-//            echo '<script type="application/javascript">' . $this->js . '</script>';
-//        }
-//        $cachedata = ob_get_contents();
-//        ob_end_clean();
-//        // Engooden the new cache with delicious data.
-//        $cache->set('cachehtml', $cachedata);
-//    }
-
-    /**
-     * Delete the frontpage and, if it's active, delete the cache.
+     * Delete the connection.
      * @return bool
      * @throws dml_exception
      */
@@ -95,24 +72,35 @@ class connections_page {
     }
 
     /**
-     * Gets the active frontpage and loads it into the object.
+     * Gets the active connections and loads it into the object.
      * @throws dml_exception
      */
-    public function load_active_frontpage() {
+    public function load_active_connections() {
         global $DB;
-        $connections = $DB->get_record('local_lb_filetr_connections', array('active' => 1), $this->returnfields);
+        $connections = $DB->get_record('local_lb_filetr_connections', array('active' => 1));
         $this->construct_connections_page($connections);
     }
 
     /**
-     * Gets the specified frontpage and loads it into the object.
+     * Gets the specified connection and loads it into the object.
      * @param $id
      * @throws dml_exception
      */
     private function load_connections_page($id) {
         global $DB;
-        $connections_page = $DB->get_record('local_lb_filetr_connections', array('id' => $id), $this->returnfields);
+        $connections_page = $DB->get_record('local_lb_filetr_connections', array('id' => $id));
         $this->construct_connections_page($connections_page);
+    }
+
+    /**
+     * get the next id
+     * @return int
+     * @throws dml_exception
+     */
+    public static function get_next_id() {
+        global $DB;
+        $tablestatus = $DB->get_record_sql('SHOW TABLE STATUS LIKE "{local_lb_filetr_connections}"');
+        return $tablestatus->auto_increment;
     }
 
     /**
@@ -129,16 +117,13 @@ class connections_page {
             $savesuccess = $DB->update_record('local_lb_filetr_connections', $this);
         } else {
             $this->timecreated = time();
+            $this->timemodified = time();
             $this->id = $DB->insert_record('local_lb_filetr_connections', $this);
             if (!empty($this->id)) {
                 $savesuccess = true;
             }
         }
         if ($savesuccess) {
-//            // Put this in the cache if it's going to be the active frontpage.
-//            if ($this->active) {
-//                $this->create_cache();
-//            }
             return true;
         }
         return false;

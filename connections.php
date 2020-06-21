@@ -98,7 +98,7 @@ if (!empty($connections->id)) {
 
 $PAGE->navbar->add($title);
 $PAGE->set_title($title);
-$PAGE->set_heading($title);
+$PAGE->set_heading(get_string("pluginname", 'local_lb_filetransfer'));
 
 $connection_table = new connections_table('connections_table');
 

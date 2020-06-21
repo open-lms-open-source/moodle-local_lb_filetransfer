@@ -133,3 +133,19 @@ $string['connection_active'] = 'Connection: {$a->name} is active.';
 $string['connection_active_error'] = 'Can not activate Connection: {$a->name}.';
 $string['connection_deactive'] = 'Connection: {$a->name} is deactivated.';
 $string['connection_deactive_error'] = 'Can not deactivate Connection: {$a->name}.';
+$string['connection_saved'] = 'Connection saved successfully';
+$string['connection_save_error'] = 'Error saving the connection';
+
+//connections form
+$string['name'] = 'Connection name';
+$string['connectiontype'] = 'Connection type';
+$string['connection_sftp'] = 'SFTP';
+$string['connection_ftp'] = 'FTP';
+$string['hostname'] = 'Hostname';
+$string['portnumber'] = 'Port number';
+$string['username'] = 'Username';
+$string['password'] = 'Password';
+$string['usepublickey'] = 'Use public key';
+$string['privatekey'] = 'Private key';
+$string['yes'] = 'Yes';
+$string['no'] = 'No';

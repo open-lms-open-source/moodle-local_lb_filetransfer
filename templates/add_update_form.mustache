@@ -15,12 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 
-<div class="lb-filetransfer-action-icons">
-    <div class = "lb-filetransfer-action-button" data-id = "{{id}}">
-        {{#buttons}}
-            <div class="lb-filetransfer-action-icon-container">
-                <a href = "{{{url}}}" class = "lb-filetransfer-action-icon-link"{{#new_tab}} target = "_blank"{{/new_tab}}><i class = "{{icon}}"></i>&nbsp;{{name}}</a>
-            </div>
-        {{/buttons}}
-    </div>
+<div class="clearfix">
+    <h1>{{title}}</h1>
+    {{{formhtml}}}
 </div>

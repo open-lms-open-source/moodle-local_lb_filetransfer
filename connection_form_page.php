@@ -24,7 +24,7 @@ $context = context_system::instance();
 
 $id = optional_param('id', null, PARAM_INT);
 
-$connections =  new connections_page($id);
+$data =  new connections_page($id);
 $editoroptions = array(
     'subdirs' => 0,
     'noclean' => true,
@@ -39,7 +39,7 @@ $PAGE->set_pagelayout('admin');
 $PAGE->set_context($context);
 $PAGE->navbar->add($title);
 $PAGE->set_title($title);
-$PAGE->set_heading($title);
+$PAGE->set_heading(get_string("pluginname", 'local_lb_filetransfer'));
 
 $returnurl = new moodle_url($CFG->wwwroot . '/local/lb_filetransfer/connections.php');
 $args = array(
@@ -48,6 +48,36 @@ $args = array(
 );
 
 $connection_page_form = new connection_form(null, $args);
+
+if ($connection_page_form->is_cancelled()) {
+    redirect(new moodle_url($CFG->wwwroot . '/local/lb_filetransfer/connections.php'));
+} else if ($savedata = $connection_page_form->get_data()) {
+    $connections =  new connections_page();
+    $savedata->active = 1;
+    $savedata->usermodified = $USER->id;
+    $connections->construct_connections_page($savedata);
+    if ($connections->save()) {
+        $message = get_string('connection_saved', 'local_lb_filetransfer');
+        $messagestyle = notification::NOTIFY_SUCCESS;
+        redirect($returnurl, $message, null, $messagestyle);
+    } else {
+        $message = get_string('connection_save_error', 'local_lb_filetransfer');
+        $messagestyle = notification::NOTIFY_ERROR;
+        redirect($returnurl, $message, null, $messagestyle);
+    }
+    redirect($returnurl, $message, null, $messagestyle);
+}
+
+$params = [
+    'title' => $title,
+    'formhtml' => $connection_page_form->export_for_template()
+];
+
+echo $OUTPUT->header();
+
+echo $OUTPUT->render_from_template('local_lb_filetransfer/add_update_form', $params);
+
+echo $OUTPUT->footer();
 
 
 
