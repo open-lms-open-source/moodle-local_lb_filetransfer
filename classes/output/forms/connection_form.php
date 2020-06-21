@@ -31,6 +31,7 @@ class connection_form extends moodleform {
 
         $mform->addElement('text', 'name', get_string('name','local_lb_filetransfer'));
         $mform->addRule('name', get_string('required'), 'required', null, 'client');
+        $mform->addRule('name',get_string('maximum_character_255', 'local_lb_filetransfer'), 'maxlength', 255, 'client');
         $mform->setType('name', PARAM_TEXT);
 
         $connectiontype = array();
@@ -41,25 +42,30 @@ class connection_form extends moodleform {
 
         $mform->addElement('text', 'hostname', get_string('hostname','local_lb_filetransfer'));
         $mform->addRule('hostname', get_string('required'), 'required', null, 'client');
+        $mform->addRule('hostname',get_string('maximum_character_255', 'local_lb_filetransfer'), 'maxlength', 255, 'client');
         $mform->setType('hostname', PARAM_TEXT);
 
         $mform->addElement('text', 'portnumber', get_string('portnumber','local_lb_filetransfer'));
         $mform->addRule('portnumber', get_string('required'), 'required', null, 'client');
+        $mform->addRule('portnumber',get_string('number_only', 'local_lb_filetransfer'), 'numeric', null, 'client');
         $mform->setType('portnumber', PARAM_TEXT);
 
         $mform->addElement('text', 'username', get_string('username','local_lb_filetransfer'));
+        $mform->addRule('username',get_string('maximum_character_255', 'local_lb_filetransfer'), 'maxlength', 255, 'client');
         $mform->setType('username', PARAM_TEXT);
 
         $mform->addElement('password', 'password', get_string('password','local_lb_filetransfer'));
+        $mform->addRule('password',get_string('maximum_character_255', 'local_lb_filetransfer'), 'maxlength', 255, 'client');
         $mform->setType('password', PARAM_TEXT);
 
         $usepublickey = array();
+        $usepublickey[] = $mform->createElement('radio', 'usepublickey', '', get_string('no', 'local_lb_filetransfer'), 0);
         $usepublickey[] = $mform->createElement('radio', 'usepublickey', '', get_string('yes','local_lb_filetransfer'), 1);
-        $usepublickey[] = $mform->createElement('radio', 'usepublickey', '', get_string('no', 'local_lb_filetransfer'), 2);
         $mform->addGroup($usepublickey, 'usepublickeygr', get_string('usepublickey', 'local_lb_filetransfer'), array(' '), false);
-        $mform->setDefault('usepublickey', 2);
+        $mform->setDefault('usepublickey', 0);
 
         $mform->addElement('textarea', 'privatekey', get_string('privatekey','local_lb_filetransfer'));
+        $mform->addRule('privatekey',get_string('maximum_character_1024', 'local_lb_filetransfer'), 'maxlength', 1024, 'client');
         $mform->setType('privatekey', PARAM_TEXT);
 
         $this->add_action_buttons();

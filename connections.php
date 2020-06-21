@@ -104,13 +104,14 @@ $connection_table = new connections_table('connections_table');
 
 $params = [
     'title' => $title,
+    'previousurl' =>  new moodle_url($CFG->wwwroot . '/local/lb_filetransfer/index.php'),
     'editurl' => new moodle_url($CFG->wwwroot . '/local/lb_filetransfer/connection_form_page.php'),
     'tablehtml' => $connection_table->export_for_template()
 ];
 
 echo $OUTPUT->header();
 
-echo $OUTPUT->render_from_template('local_lb_filetransfer/connections_table', $params);
+echo $OUTPUT->render_from_template('local_lb_filetransfer/general_table', $params);
 
 echo $OUTPUT->footer();
 

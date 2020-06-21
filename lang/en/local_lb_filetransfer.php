@@ -107,6 +107,9 @@ $string['pluginname_description'] = 'Learnbook File Transfer plugin to automate 
 //$string['filetransfererror'] = 'Error, can not get file from remote directory';
 //$string['filetransfererrorcsv'] = 'User upload not successful, check the uploaded CSV.';
 
+//standard
+$string['go-back'] = 'Go back';
+
 //index-page
 $string['config_connections'] = 'Configure Connections';
 $string['config_useruploads'] = 'Configure User Uploads';
@@ -149,3 +152,6 @@ $string['usepublickey'] = 'Use public key';
 $string['privatekey'] = 'Private key';
 $string['yes'] = 'Yes';
 $string['no'] = 'No';
+$string['number_only'] = 'Numeric characters only';
+$string['maximum_character_255'] = 'Maximum 255 characters';
+$string['maximum_character_1024'] = 'Maximum 1024 characters';
