@@ -10,8 +10,8 @@
 
 require('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
-require($CFG->dirroot.'/local/lb_filetransfer/classes/connections_page.php');
-require($CFG->dirroot.'/local/lb_filetransfer/classes/output/forms/connection_form.php');
+require($CFG->dirroot.'/local/lb_filetransfer/classes/useruploads_page.php');
+require($CFG->dirroot.'/local/lb_filetransfer/classes/output/forms/useruploads_form.php');
 
 use \core\output\notification;
 
@@ -24,7 +24,7 @@ $context = context_system::instance();
 
 $id = optional_param('id', null, PARAM_INT);
 
-$data =  new connections_page($id);
+$data =  new useruploads_page($id);
 $editoroptions = array(
     'subdirs' => 0,
     'noclean' => true,
@@ -33,7 +33,7 @@ $editoroptions = array(
 );
 $data = file_prepare_standard_editor($data, 'html', $editoroptions, $context, 'local_lb_filetransfer', null, $id);
 
-$title = get_string("config_connections", 'local_lb_filetransfer');
+$title = get_string("config_useruploads", 'local_lb_filetransfer');
 $PAGE->set_url('/local/lb_filetransfer/connections_form_page.php');
 $PAGE->set_pagelayout('admin');
 $PAGE->set_context($context);
@@ -41,28 +41,33 @@ $PAGE->navbar->add($title);
 $PAGE->set_title($title);
 $PAGE->set_heading(get_string("pluginname", 'local_lb_filetransfer'));
 
-$returnurl = new moodle_url($CFG->wwwroot . '/local/lb_filetransfer/connections.php');
+$returnurl = new moodle_url($CFG->wwwroot . '/local/lb_filetransfer/useruploads.php');
 $args = array(
     'editoroptions' => $editoroptions,
     'data' => $data
 );
 
-$connection_page_form = new connection_form(null, $args);
+$userupload_page_form = new useruploads_form(null, $args);
 
-if ($connection_page_form->is_cancelled()) {
-    redirect(new moodle_url($CFG->wwwroot . '/local/lb_filetransfer/connections.php'));
-} else if ($savedata = $connection_page_form->get_data()) {
-    $connections =  new connections_page();
+if ($userupload_page_form->is_cancelled()) {
+    redirect(new moodle_url($CFG->wwwroot . '/local/lb_filetransfer/useruploads.php'));
+} else if ($savedata = $userupload_page_form->get_data()) {
+    $useruploads =  new useruploads_page();
     if (empty($savedata->id)) {
         $savedata->active = 1;
     }
-    $connections->construct_connections_page($savedata);
-    if ($connections->save()) {
-        $message = get_string('connection_saved', 'local_lb_filetransfer');
+    if ((int)$savedata->archivefile == 0) {
+        $savedata->archiveperiod = 0;
+    } else {
+        $savedata->archiveperiod = (int)$savedata->archiveperiod;
+    }
+    $useruploads->construct_useruploads_page($savedata);
+    if ($useruploads->save()) {
+        $message = get_string('userupload_saved', 'local_lb_filetransfer');
         $messagestyle = notification::NOTIFY_SUCCESS;
         redirect($returnurl, $message, null, $messagestyle);
     } else {
-        $message = get_string('connection_save_error', 'local_lb_filetransfer');
+        $message = get_string('userupload_save_error', 'local_lb_filetransfer');
         $messagestyle = notification::NOTIFY_ERROR;
         redirect($returnurl, $message, null, $messagestyle);
     }
@@ -71,7 +76,7 @@ if ($connection_page_form->is_cancelled()) {
 
 $params = [
     'title' => $title,
-    'formhtml' => $connection_page_form->export_for_template()
+    'formhtml' => $userupload_page_form->export_for_template()
 ];
 
 echo $OUTPUT->header();
@@ -79,15 +84,3 @@ echo $OUTPUT->header();
 echo $OUTPUT->render_from_template('local_lb_filetransfer/add_update_form', $params);
 
 echo $OUTPUT->footer();
-
-
-
-
-
-
-
-
-
-
-
-

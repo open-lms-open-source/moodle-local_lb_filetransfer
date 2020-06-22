@@ -26,6 +26,7 @@ class connections_page {
     public $usepublickey = 0;
     public $privatekey = null;
     public $active = 0;
+    public $usermodified = 0;
 
     /**
      * connections_page constructor.
@@ -45,6 +46,7 @@ class connections_page {
      */
     public function construct_connections_page($connections) {
         if (!empty($connections)) {
+            global $USER;
             $this->id = $connections->id;
             $this->name = $connections->name;
             $this->connectiontype = $connections->connectiontype;
@@ -55,6 +57,7 @@ class connections_page {
             $this->usepublickey = $connections->usepublickey;
             $this->privatekey = $connections->privatekey;
             $this->active = $connections->active;
+            $this->usermodified = (int)$USER->id;
         }
     }
 
@@ -66,7 +69,30 @@ class connections_page {
     public function delete() {
         global $DB;
         if (!empty($this->id)) {
+            if (!connections_page::data_dependency_check($this->id)) {
+                return false;
+            }
             return $DB->delete_records('local_lb_filetr_connections', array('id' => $this->id));
+        }
+        return false;
+    }
+
+    /**
+     * Deactivate/activate the connection.
+     * @return bool
+     * @throws dml_exception
+     */
+    public function activate_deactivate() {
+        global $DB;
+        if (!empty($this->id)) {
+            if (!connections_page::data_dependency_check($this->id)) {
+                return false;
+            }
+            $this->timemodified = time();
+            $savesuccess = $DB->update_record('local_lb_filetr_connections', $this);
+            if ($savesuccess) {
+                return true;
+            }
         }
         return false;
     }
@@ -92,15 +118,16 @@ class connections_page {
         $this->construct_connections_page($connections_page);
     }
 
-    /**
-     * get the next id
-     * @return int
-     * @throws dml_exception
-     */
-    public static function get_next_id() {
+    public function data_dependency_check($id) {
         global $DB;
-        $tablestatus = $DB->get_record_sql('SHOW TABLE STATUS LIKE "{local_lb_filetr_connections}"');
-        return $tablestatus->auto_increment;
+        $datadependency = $DB->get_record_sql('SELECT count(id) as datacount
+                                                    FROM {local_lb_filetr_uploads} 
+                                                    WHERE connectionid = :connectionid',
+                                                    array('connectionid' => $id));
+        if ($datadependency->datacount > 0) {
+            return false;
+        }
+        return true;
     }
 
     /**

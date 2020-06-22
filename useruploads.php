@@ -10,8 +10,9 @@
 
 require('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
-require($CFG->dirroot.'/local/lb_filetransfer/classes/connections_page.php');
-require($CFG->dirroot.'/local/lb_filetransfer/classes/output/tables/connections_table.php');
+require($CFG->dirroot.'/local/lb_filetransfer/classes/useruploads_page.php');
+require($CFG->dirroot.'/local/lb_filetransfer/classes/output/tables/useruploads_table.php');
+
 
 use \core\output\notification;
 
@@ -24,41 +25,43 @@ $confirm = optional_param('confirm', 0, PARAM_BOOL);
 
 $context = context_system::instance();
 
-$title = get_string("config_connections", 'local_lb_filetransfer');
-$PAGE->set_url('/local/lb_filetransfer/connections.php');
+$title = get_string("config_useruploads", 'local_lb_filetransfer');
+$PAGE->set_url('/local/lb_filetransfer/useruploads.php');
 $PAGE->set_pagelayout('admin');
 $PAGE->set_context($context);
 
-$returnurl = new moodle_url($CFG->wwwroot . '/local/lb_filetransfer/connections.php');
+$returnurl = new moodle_url($CFG->wwwroot . '/local/lb_filetransfer/useruploads.php');
 
-$connections =  new connections_page($id);
+$useruploads =  new useruploads_page($id);
+
 //table actions
-if (!empty($connections->id)) {
+if (!empty($useruploads->id)) {
     if ($action == 'delete') {
         $PAGE->url->param('action', 'delete');
         $a = new stdClass();
-        $a->name = $connections->name;
+        $a->name = $useruploads->name;
         if ($confirm and confirm_sesskey()) {
-            if ($connections->delete()) {
-                $message = get_string('connection_deleted', 'local_lb_filetransfer', $a);
+//            $active_useruploads = $useruploads->active;
+            if ($useruploads->delete()) {
+                $message = get_string('userupload_deleted', 'local_lb_filetransfer', $a);
                 $messagestyle = notification::NOTIFY_SUCCESS;
             } else {
-                $message = get_string('connection_delete_failed', 'local_lb_filetransfer', $a);
+                $message = get_string('userupload_delete_failed', 'local_lb_filetransfer', $a);
                 $messagestyle = notification::NOTIFY_ERROR;
             }
             redirect($returnurl, $message, null, $messagestyle);
         }
-        $strheading = get_string('delete_connection', 'local_lb_filetransfer');
+        $strheading = get_string('delete_userupload', 'local_lb_filetransfer');
         $PAGE->navbar->add($strheading);
         $PAGE->set_title($strheading);
         $PAGE->set_heading($strheading);
 
         echo $OUTPUT->header();
 
-        $yesurl = new moodle_url($CFG->wwwroot . '/local/lb_filetransfer/connections.php', array(
-            'id' => $connections->id, 'action' => 'delete', 'confirm' => 1, 'sesskey' => sesskey()
+        $yesurl = new moodle_url($CFG->wwwroot . '/local/lb_filetransfer/useruploads.php', array(
+            'id' => $useruploads->id, 'action' => 'delete', 'confirm' => 1, 'sesskey' => sesskey()
         ));
-        $message = get_string('delete_connection_confirmation', 'local_lb_filetransfer', $a);
+        $message = get_string('delete_userupload_confirmation', 'local_lb_filetransfer', $a);
         echo $OUTPUT->confirm($message, $yesurl, $returnurl);
         echo $OUTPUT->footer();
         die;
@@ -66,27 +69,27 @@ if (!empty($connections->id)) {
     if (confirm_sesskey()) {
         if ($action == 'show') {
             $a = new stdClass();
-            $a->name = $connections->name;
-            $message = get_string('connection_active', 'local_lb_filetransfer', $a);
+            $a->name = $useruploads->name;
+            $message = get_string('userupload_active', 'local_lb_filetransfer', $a);
             $messagestyle = notification::NOTIFY_SUCCESS;
-            if (!$connections->active) {
-                $connections->active = 1;
-                if (!$connections->activate_deactivate()) {
-                    $message = get_string('connection_active_error', 'local_lb_filetransfer', $a);
+            if (!$useruploads->active) {
+                $useruploads->active = 1;
+                if (!$useruploads->save()) {
+                    $message = get_string('userupload_active_error', 'local_lb_filetransfer', $a);
                     $messagestyle = notification::NOTIFY_ERROR;
                 }
             }
             redirect($returnurl, $message, null, $messagestyle);
         } else if ($action == 'hide') {
             $a = new stdClass();
-            $a->name = $connections->name;
-            $message = get_string('connection_deactive', 'local_lb_filetransfer', $a);
+            $a->name = $useruploads->name;
+            $message = get_string('userupload_deactive', 'local_lb_filetransfer', $a);
             $messagestyle = notification::NOTIFY_SUCCESS;
             // Don't bother doing anything if it's already inactive.
-            if ($connections->active) {
-                $connections->active = 0;
-                if (!$connections->activate_deactivate()) {
-                    $message = get_string('connection_deactive_error', 'local_lb_filetransfer', $a);
+            if ($useruploads->active) {
+                $useruploads->active = 0;
+                if (!$useruploads->save()) {
+                    $message = get_string('userupload_deactive_error', 'local_lb_filetransfer', $a);
                     $messagestyle = notification::NOTIFY_ERROR;
                 }
             }
@@ -99,13 +102,13 @@ $PAGE->navbar->add($title);
 $PAGE->set_title($title);
 $PAGE->set_heading(get_string("pluginname", 'local_lb_filetransfer'));
 
-$connection_table = new connections_table('connections_table');
+$useruploads_table = new useruploads_table('useruploads_table');
 
 $params = [
     'title' => $title,
     'previousurl' =>  new moodle_url($CFG->wwwroot . '/local/lb_filetransfer/index.php'),
-    'editurl' => new moodle_url($CFG->wwwroot . '/local/lb_filetransfer/connection_form_page.php'),
-    'tablehtml' => $connection_table->export_for_template()
+    'editurl' => new moodle_url($CFG->wwwroot . '/local/lb_filetransfer/userupload_form_page.php'),
+    'tablehtml' => $useruploads_table->export_for_template()
 ];
 
 echo $OUTPUT->header();
@@ -113,4 +116,3 @@ echo $OUTPUT->header();
 echo $OUTPUT->render_from_template('local_lb_filetransfer/general_table', $params);
 
 echo $OUTPUT->footer();
-

@@ -107,15 +107,9 @@ $string['pluginname_description'] = 'Learnbook File Transfer plugin to automate 
 //$string['filetransfererror'] = 'Error, can not get file from remote directory';
 //$string['filetransfererrorcsv'] = 'User upload not successful, check the uploaded CSV.';
 
-//standard
+//general table
 $string['go-back'] = 'Go back';
-
-//index-page
-$string['config_connections'] = 'Configure Connections';
-$string['config_useruploads'] = 'Configure User Uploads';
-$string['config_outgoingreports'] = 'Configure Outgoing Reports';
-
-//connections page
+$string['createnew'] = 'Create new';
 $string['id'] = 'Id';
 $string['name'] = 'Name';
 $string['status'] = 'Status';
@@ -126,16 +120,21 @@ $string['active'] = 'Active';
 $string['inactive'] = 'Inactive';
 $string['activate'] = 'Activate';
 $string['deactivate'] = 'Deactivate';
-$string['createnew'] = 'Create new';
-$string['delete_conneciton'] = 'Delete connection';
+
+//index-page
+$string['config_connections'] = 'Configure Connections';
+$string['config_useruploads'] = 'Configure User Uploads';
+$string['config_outgoingreports'] = 'Configure Outgoing Reports';
+
+//connections page
+$string['delete_connection'] = 'Delete connection';
 $string['delete_connection_confirmation'] = 'Are you sure you want to delete this connection: {$a->name}.';
 $string['connection_deleted'] = 'Connection: {$a->name} deleted.';
-$string['connection_delete_failed'] = 'Could not delete connection: {$a->name}.';
-$string['settings_saved'] = 'Connection changes saved successfully.';
+$string['connection_delete_failed'] = 'Could not delete connection: {$a->name}, please remove associate data before deleting connection.';
 $string['connection_active'] = 'Connection: {$a->name} is active.';
-$string['connection_active_error'] = 'Can not activate Connection: {$a->name}.';
+$string['connection_active_error'] = 'Can not activate connection: {$a->name}.';
 $string['connection_deactive'] = 'Connection: {$a->name} is deactivated.';
-$string['connection_deactive_error'] = 'Can not deactivate Connection: {$a->name}.';
+$string['connection_deactive_error'] = 'Can not deactivate connection: {$a->name}, please remove associate data before making changes.';
 $string['connection_saved'] = 'Connection saved successfully';
 $string['connection_save_error'] = 'Error saving the connection';
 
@@ -155,3 +154,24 @@ $string['no'] = 'No';
 $string['number_only'] = 'Numeric characters only';
 $string['maximum_character_255'] = 'Maximum 255 characters';
 $string['maximum_character_1024'] = 'Maximum 1024 characters';
+
+//useruploads form
+$string['pathtofile'] = 'Path to file';
+$string['filename'] = 'File name';
+$string['twoweeks'] = '2 Weeks';
+$string['fourweeks'] = '4 Weeks';
+$string['archivefile'] = 'Archive file';
+$string['archiveperiod'] = 'Archive period';
+$string['connectionid'] = 'Select connection';
+
+//useruploads page
+$string['delete_userupload'] = 'Delete user upload instance';
+$string['delete_userupload_confirmation'] = 'Are you sure you want to delete this user upload instance: {$a->name}.';
+$string['userupload_deleted'] = 'User upload instance: {$a->name} deleted.';
+$string['userupload_delete_failed'] = 'Could not delete user upload instance: {$a->name}.';
+$string['userupload_active'] = 'User upload instance: {$a->name} is active.';
+$string['userupload_active_error'] = 'Can not activate user upload instance: {$a->name}.';
+$string['userupload_deactive'] = 'User upload instance: {$a->name} is deactivated.';
+$string['userupload_deactive_error'] = 'Can not deactivate user upload instance: {$a->name}.';
+$string['userupload_saved'] = 'User upload information saved successfully.';
+$string['userupload_save_error'] = 'Error saving User upload information.';

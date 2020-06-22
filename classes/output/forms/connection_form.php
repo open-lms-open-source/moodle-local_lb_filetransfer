@@ -68,6 +68,9 @@ class connection_form extends moodleform {
         $mform->addRule('privatekey',get_string('maximum_character_1024', 'local_lb_filetransfer'), 'maxlength', 1024, 'client');
         $mform->setType('privatekey', PARAM_TEXT);
 
+        $mform->addElement('hidden', 'active');
+        $mform->setType('active', PARAM_INT);
+
         $this->add_action_buttons();
         $this->set_data($data);
     }
