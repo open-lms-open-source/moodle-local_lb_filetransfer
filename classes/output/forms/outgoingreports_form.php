@@ -13,14 +13,13 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/lib/formslib.php');
 
 /**
- * Class useruploads_form.
+ * Class outgoingreports_form.
  * An extension of your usual Moodle form.
  */
-
-class useruploads_form extends moodleform {
+class outgoingreports_form extends moodleform {
 
     /**
-     * Defines the custom useruploads_form.
+     * Defines the custom outgoingreports_form.
      * @throws dml_exception
      * @throws coding_exception
      */
@@ -36,11 +35,15 @@ class useruploads_form extends moodleform {
         $mform->addRule('name',get_string('maximum_character_255', 'local_lb_filetransfer'), 'maxlength', 255, 'client');
         $mform->setType('name', PARAM_TEXT);
 
-        $connectiontype = (new useruploads_page)->get_connections();
+        $connectiontype = (new outgoingreports_page)->get_connections();
         $mform->addElement('select', 'connectionid', get_string('connectionid', 'local_lb_filetransfer'), $connectiontype);
         $mform->addRule('connectionid', get_string('required'), 'required', null, 'client');
         $mform->setDefault('connectionid', 0);
 
+        $configurablereportid = (new outgoingreports_page)->get_configurable_reports();
+        $mform->addElement('select', 'configurablereportid', get_string('configurablereportid', 'local_lb_filetransfer'), $configurablereportid);
+        $mform->addRule('configurablereportid', get_string('required'), 'required', null, 'client');
+        $mform->setDefault('configurablereportid', 0);
 
         $mform->addElement('text', 'pathtofile', get_string('pathtofile','local_lb_filetransfer'));
         $mform->addRule('pathtofile', get_string('required'), 'required', null, 'client');
@@ -62,6 +65,10 @@ class useruploads_form extends moodleform {
         $archiveperiod[] = $mform->createElement('radio', 'archiveperiod', '', get_string('fourweeks', 'local_lb_filetransfer'), 28);
         $mform->addGroup($archiveperiod, 'archiveperiodgr', get_string('archiveperiod', 'local_lb_filetransfer'), array(' '), false);
         $mform->setDefault('archiveperiod', 0);
+
+        $mform->addElement('text', 'email', get_string('email','local_lb_filetransfer'));
+        $mform->addRule('email',get_string('maximum_character_255', 'local_lb_filetransfer'), 'maxlength', 255, 'client');
+        $mform->setType('email', PARAM_TEXT);
 
         $mform->addElement('hidden', 'active');
         $mform->setType('active', PARAM_INT);

@@ -120,11 +120,16 @@ class connections_page {
 
     public function data_dependency_check($id) {
         global $DB;
-        $datadependency = $DB->get_record_sql('SELECT count(id) as datacount
-                                                    FROM {local_lb_filetr_uploads} 
-                                                    WHERE connectionid = :connectionid',
-                                                    array('connectionid' => $id));
-        if ($datadependency->datacount > 0) {
+        $datadependency_userupload = $DB->get_record_sql('SELECT count(id) as datacount
+                                                               FROM {local_lb_filetr_uploads} 
+                                                               WHERE connectionid = :connectionid',
+                                                               array('connectionid' => $id));
+
+        $datadependency_outgointreport = $DB->get_record_sql('SELECT count(id) as datacount
+                                                                   FROM {local_lb_filetr_reports} 
+                                                                   WHERE connectionid = :connectionid',
+                                                                   array('connectionid' => $id));
+        if ($datadependency_userupload->datacount > 0 || $datadependency_outgointreport->datacount > 0) {
             return false;
         }
         return true;

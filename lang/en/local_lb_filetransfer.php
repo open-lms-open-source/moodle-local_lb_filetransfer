@@ -174,4 +174,20 @@ $string['userupload_active_error'] = 'Can not activate user upload instance: {$a
 $string['userupload_deactive'] = 'User upload instance: {$a->name} is deactivated.';
 $string['userupload_deactive_error'] = 'Can not deactivate user upload instance: {$a->name}.';
 $string['userupload_saved'] = 'User upload information saved successfully.';
-$string['userupload_save_error'] = 'Error saving User upload information.';
+$string['userupload_save_error'] = 'Error saving user upload information.';
+
+//outgoing report form
+$string['email'] = 'Email report (comma separated, no space)';
+$string['configurablereportid'] = 'Select report';
+
+//outgoing reports page
+$string['delete_outgoingreport'] = 'Delete outgoing report instance';
+$string['delete_outgoingreport_confirmation'] = 'Are you sure you want to delete this outgoing report instance: {$a->name}.';
+$string['outgoingreport_deleted'] = 'Outgoing report instance: {$a->name} deleted.';
+$string['outgoingreport_delete_failed'] = 'Could not delete outgoing report instance: {$a->name}.';
+$string['outgoingreport_active'] = 'Outgoing report instance: {$a->name} is active.';
+$string['outgoingreport_active_error'] = 'Can not activate outgoing report instance: {$a->name}.';
+$string['outgoingreport_deactive'] = 'Outgoing report instance: {$a->name} is deactivated.';
+$string['outgoingreport_deactive_error'] = 'Can not deactivate outgoing report instance: {$a->name}.';
+$string['outgoingreport_saved'] = 'Outgoing report information saved successfully.';
+$string['outgoingreport_save_error'] = 'Error saving outgoing report information.';
