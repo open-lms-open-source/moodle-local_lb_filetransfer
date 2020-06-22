@@ -39,7 +39,7 @@ class useruploads_page {
 
     /**
      * Constructs the actual useruploads object given either a $DB object or Moodle form data.
-     * @param $connections
+     * @param $useruploads
      */
     public function construct_useruploads_page($useruploads) {
         if (!empty($useruploads)) {
@@ -88,6 +88,24 @@ class useruploads_page {
         global $DB;
         $useruploads_page = $DB->get_record('local_lb_filetr_uploads', array('id' => $id));
         $this->construct_useruploads_page($useruploads_page);
+    }
+
+    /**
+     * Gets all the active connections.
+     * @return array
+     * @throws dml_exception
+     */
+    public function get_connections () {
+        global $DB;
+        $connectiontype = array();
+        $connections = $DB->get_records_sql('SELECT lfc.id, lfc.name
+                                                  FROM {local_lb_filetr_connections} lfc
+                                                  WHERE lfc.active = :active',
+                                                  array('active' => 1));
+        foreach ($connections as $connection) {
+            $connectiontype[$connection->id] = $connection->name;
+        }
+        return $connectiontype;
     }
 
     /**

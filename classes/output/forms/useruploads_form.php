@@ -21,6 +21,8 @@ class useruploads_form extends moodleform {
 
     /**
      * Defines the custom useruploads_form.
+     * @throws dml_exception
+     * @throws coding_exception
      */
     public function definition() {
         global $DB;
@@ -35,26 +37,11 @@ class useruploads_form extends moodleform {
         $mform->addRule('name',get_string('maximum_character_255', 'local_lb_filetransfer'), 'maxlength', 255, 'client');
         $mform->setType('name', PARAM_TEXT);
 
-        /*
-         * $choices = array();
-    $choices['0'] = get_string('emaildisplayno');
-    $choices['1'] = get_string('emaildisplayyes');
-    $choices['2'] = get_string('emaildisplaycourse');
-    $mform->addElement('select', 'maildisplay', get_string('emaildisplay'), $choices);
-    $mform->setDefault('maildisplay', core_user::get_property_default('maildisplay'));
-    $mform->addHelpButton('maildisplay', 'emaildisplay');
-         */
-
-        $connectiontype = array();
-        $connections = $DB->get_records_sql('SELECT lfc.id, lfc.name
-                                                  FROM {local_lb_filetr_connections} lfc
-                                                  WHERE lfc.active = :active',
-                                                  array('active' => 1));
-        foreach ($connections as $connection) {
-            $connectiontype[] = $mform->createElement('radio', 'connectionid', '', $connection->name, $connection->id);
-        }
-        $mform->addGroup($connectiontype, 'connectionidgr', get_string('connectionid', 'local_lb_filetransfer'), array(' '), false);
+        $connectiontype = (new useruploads_page)->get_connections();
+        $mform->addElement('select', 'connectionid', get_string('connectionid', 'local_lb_filetransfer'), $connectiontype);
+        $mform->addRule('connectionid', get_string('required'), 'required', null, 'client');
         $mform->setDefault('connectionid', 0);
+
 
         $mform->addElement('text', 'pathtofile', get_string('pathtofile','local_lb_filetransfer'));
         $mform->addRule('pathtofile', get_string('required'), 'required', null, 'client');

@@ -41,7 +41,6 @@ if (!empty($useruploads->id)) {
         $a = new stdClass();
         $a->name = $useruploads->name;
         if ($confirm and confirm_sesskey()) {
-//            $active_useruploads = $useruploads->active;
             if ($useruploads->delete()) {
                 $message = get_string('userupload_deleted', 'local_lb_filetransfer', $a);
                 $messagestyle = notification::NOTIFY_SUCCESS;
