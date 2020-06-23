@@ -5,14 +5,15 @@
  *
  * @package     local_lb_filetransfer
  * @category    admin
- * @copyright   2019 A K M Safat Shahin <safat@ecreators.com.au>
+ * @copyright   2020 A K M Safat Shahin <safat@ecreators.com.au>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace local_lb_filetransfer\task;
 
 defined('MOODLE_INTERNAL') || die();
-
+global $CFG;
+require($CFG->dirroot.'/local/lb_filetransfer/classes/lb_filetransfer_userupload.php');
 class filetransfer extends \core\task\scheduled_task {
 
     public function get_name() {
@@ -20,8 +21,7 @@ class filetransfer extends \core\task\scheduled_task {
     }
 
     public function execute() {
-        global $CFG;
-        require_once($CFG->dirroot . '/local/lb_filetransfer/filetransfer.php');
-        getFile();
+
+        (new \lb_filetransfer_userupload)->get_userupload_file();
     }
 }

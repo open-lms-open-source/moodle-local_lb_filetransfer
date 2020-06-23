@@ -139,7 +139,7 @@ if ($hassiteconfig) {
 //    $name = 'local_lb_filetransfer/uploadsetting';
 //    $visiblename = get_string('uploadsetting','local_lb_filetransfer');
 //    $settings->add(new admin_setting_heading($name, $visiblename, ''));
-//
+
 //    $uu_user_addnew = get_string('uuoptype_addnew', 'local_lb_filetransfer');
 //    $uu_user_addinc = get_string('uuoptype_addinc', 'local_lb_filetransfer');
 //    $uu_user_add_update = get_string('uuoptype_addupdate', 'local_lb_filetransfer');
@@ -149,7 +149,7 @@ if ($hassiteconfig) {
 //    $name = 'local_lb_filetransfer/uutype';
 //    $visiblename = get_string('uutype','local_lb_filetransfer');
 //    $settings->add(new admin_setting_configselect($name, $visiblename, '', 2,$dropdown));
-//
+
 //    $infilefield = get_string('infilefield', 'local_lb_filetransfer');
 //    $createpasswordifneeded = get_string('createpasswordifneeded', 'local_lb_filetransfer');
 //    $dropdown = array($infilefield,$createpasswordifneeded);
@@ -157,7 +157,7 @@ if ($hassiteconfig) {
 //    $name = 'local_lb_filetransfer/uupasswordnew';
 //    $visiblename = get_string('uupasswordnew','local_lb_filetransfer');
 //    $settings->add(new admin_setting_configselect($name, $visiblename, '', 1,$dropdown));
-//
+
 //    $uu_update_nochanges = get_string('nochanges', 'local_lb_filetransfer');
 //    $uu_update_fileoverride = get_string('uuupdatefromfile', 'local_lb_filetransfer');
 //    $uu_update_alloverride  = get_string('uuupdateall', 'local_lb_filetransfer');
@@ -167,7 +167,7 @@ if ($hassiteconfig) {
 //    $name = 'local_lb_filetransfer/uuupdatetype';
 //    $visiblename = get_string('uuupdatetype','local_lb_filetransfer');
 //    $settings->add(new admin_setting_configselect($name, $visiblename, '', 2,$dropdown));
-//
+
 //    $nochanges  = get_string('nochanges', 'local_lb_filetransfer');
 //    $update = get_string('update', 'local_lb_filetransfer');
 //    $dropdown = array($nochanges,$update);
@@ -175,7 +175,7 @@ if ($hassiteconfig) {
 //    $name = 'local_lb_filetransfer/uupasswordold';
 //    $visiblename = get_string('uupasswordold','local_lb_filetransfer');
 //    $settings->add(new admin_setting_configselect($name, $visiblename, '', 0,$dropdown));
-//
+
 //    $yes = get_string('yes', 'local_lb_filetransfer');
 //    $no = get_string('no', 'local_lb_filetransfer');
 //    $dropdown = array($no,$yes);
@@ -183,7 +183,7 @@ if ($hassiteconfig) {
 //    $name = 'local_lb_filetransfer/allowrename';
 //    $visiblename = get_string('allowrename','local_lb_filetransfer');
 //    $settings->add(new admin_setting_configselect($name, $visiblename, '', 1,$dropdown));
-//
+
 //    $yes = get_string('yes', 'local_lb_filetransfer');
 //    $no = get_string('no', 'local_lb_filetransfer');
 //    $dropdown = array($no,$yes);
@@ -191,7 +191,7 @@ if ($hassiteconfig) {
 //    $name = 'local_lb_filetransfer/allowdeletes';
 //    $visiblename = get_string('allowdeletes','local_lb_filetransfer');
 //    $settings->add(new admin_setting_configselect($name, $visiblename, '', 1,$dropdown));
-//
+
 //    $yes = get_string('yes', 'local_lb_filetransfer');
 //    $no = get_string('no', 'local_lb_filetransfer');
 //    $dropdown = array($no,$yes);
@@ -199,7 +199,7 @@ if ($hassiteconfig) {
 //    $name = 'local_lb_filetransfer/allowsuspend';
 //    $visiblename = get_string('allowsuspend','local_lb_filetransfer');
 //    $settings->add(new admin_setting_configselect($name, $visiblename, '', 1,$dropdown));
-//
+
 //    $yes = get_string('yes', 'local_lb_filetransfer');
 //    $no = get_string('no', 'local_lb_filetransfer');
 //    $dropdown = array($no,$yes);
@@ -207,7 +207,7 @@ if ($hassiteconfig) {
 //    $name = 'local_lb_filetransfer/noemailduplicate';
 //    $visiblename = get_string('noemailduplicate','local_lb_filetransfer');
 //    $settings->add(new admin_setting_configselect($name, $visiblename, '', 1,$dropdown));
-//
+
 //    $yes = get_string('yes', 'local_lb_filetransfer');
 //    $no = get_string('no', 'local_lb_filetransfer');
 //    $dropdown = array($no,$yes);
@@ -215,5 +215,5 @@ if ($hassiteconfig) {
 //    $name = 'local_lb_filetransfer/standardusername';
 //    $visiblename = get_string('standardusername','local_lb_filetransfer');
 //    $settings->add(new admin_setting_configselect($name, $visiblename, '', 1,$dropdown));
-//
+
 //}

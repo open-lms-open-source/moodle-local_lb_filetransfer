@@ -9,7 +9,6 @@
  */
 
 defined('MOODLE_INTERNAL') || die;
-require($CFG->dirroot.'/local/lb_filetransfer/classes/lb_filetransfer_constants.php');
 
 /**
  * Class usedruploads_page represents a usedruploads object.
@@ -24,6 +23,15 @@ class useruploads_page {
     public $archiveperiod = 0;
     public $active = 0;
     public $usermodified = 0;
+    public $uutype = 0;
+    public $uupasswordnew = 0;
+    public $uuupdatetype = 0;
+    public $uupasswordold = 0;
+    public $allowrename = 0;
+    public $allowdeletes = 0;
+    public $allowsuspend = 0;
+    public $noemailduplicate = 0;
+    public $standardusername = 0;
 
     /**
      * useruploads_page constructor.
@@ -51,6 +59,15 @@ class useruploads_page {
             $this->filename = $useruploads->filename;
             $this->archivefile = $useruploads->archivefile;
             $this->archiveperiod = $useruploads->archiveperiod;
+            $this->uutype = $useruploads->uutype;
+            $this->uupasswordnew = $useruploads->uupasswordnew;
+            $this->uuupdatetype = $useruploads->uuupdatetype;
+            $this->uupasswordold = $useruploads->uupasswordold;
+            $this->allowrename = $useruploads->allowrename;
+            $this->allowdeletes = $useruploads->allowdeletes;
+            $this->allowsuspend = $useruploads->allowsuspend;
+            $this->noemailduplicate = $useruploads->noemailduplicate;
+            $this->standardusername = $useruploads->standardusername;
             $this->active = $useruploads->active;
             $this->usermodified = (int)$USER->id;
         }

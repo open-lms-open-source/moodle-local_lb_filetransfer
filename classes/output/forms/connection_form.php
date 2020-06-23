@@ -36,7 +36,8 @@ class connection_form extends moodleform {
 
         $connectiontype = array();
         $connectiontype[] = $mform->createElement('radio', 'connectiontype', '', get_string('connection_sftp','local_lb_filetransfer'), 1);
-        $connectiontype[] = $mform->createElement('radio', 'connectiontype', '', get_string('connection_ftp', 'local_lb_filetransfer'), 2);
+        //for future addition of different connection types
+        //$connectiontype[] = $mform->createElement('radio', 'connectiontype', '', get_string('connection_ftp', 'local_lb_filetransfer'), 2);
         $mform->addGroup($connectiontype, 'connections', get_string('connectiontype', 'local_lb_filetransfer'), array(' '), false);
         $mform->setDefault('connectiontype', 1);
 

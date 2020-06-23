@@ -344,6 +344,7 @@ function userUpload($fileToUpload) {
     mtrace('Executing the codes.');
     try {
         eval($indexfile);
+        mtrace('Code executed.');
     }
     catch (Exception $e) {
         $output = ob_get_clean();

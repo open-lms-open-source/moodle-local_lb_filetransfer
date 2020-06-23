@@ -9,7 +9,6 @@
  */
 
 defined('MOODLE_INTERNAL') || die;
-require($CFG->dirroot.'/local/lb_filetransfer/classes/lb_filetransfer_constants.php');
 
 /**
  * Class connections_page represents a connections object.
@@ -18,7 +17,7 @@ require($CFG->dirroot.'/local/lb_filetransfer/classes/lb_filetransfer_constants.
 class connections_page {
 
     public $name = null;
-    public $connectiontype = lb_filetransfer_constants::CONNECTION_SFTP;
+    public $connectiontype = 0;
     public $hostname = null;
     public $portnumber = 22;
     public $username = null;

@@ -9,7 +9,6 @@
  */
 
 defined('MOODLE_INTERNAL') || die;
-require($CFG->dirroot.'/local/lb_filetransfer/classes/lb_filetransfer_constants.php');
 
 /**
  * Class outgoingreports_page represents a usedruploads object.

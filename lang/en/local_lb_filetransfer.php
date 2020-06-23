@@ -107,6 +107,9 @@ $string['pluginname_description'] = 'Learnbook File Transfer plugin to automate 
 //$string['filetransfererror'] = 'Error, can not get file from remote directory';
 //$string['filetransfererrorcsv'] = 'User upload not successful, check the uploaded CSV.';
 
+//task
+$string['filetransfertask'] = 'Learnbook File trasfer';
+
 //general table
 $string['go-back'] = 'Go back';
 $string['createnew'] = 'Create new';
@@ -163,6 +166,29 @@ $string['fourweeks'] = '4 Weeks';
 $string['archivefile'] = 'Archive file';
 $string['archiveperiod'] = 'Archive period';
 $string['connectionid'] = 'Select connection';
+$string['uutype'] = 'Upload type';
+$string['uuoptype_addinc'] = 'Add all, append number to usernames if needed';
+$string['uuoptype_addnew'] = 'Add new only, skip existing users';
+$string['uuoptype_addupdate'] = 'Add new and update existing users';
+$string['uuoptype_update'] = 'Update existing users only';
+$string['uupasswordnew'] = 'New user password';
+$string['infilefield'] = 'Field required in file';
+$string['createpasswordifneeded'] = 'Create password if needed and send via email';
+$string['uuupdatetype'] = 'Existing user details';
+$string['nochanges'] = 'No changes';
+$string['uuupdatefromfile'] = 'Override with file';
+$string['uuupdateall'] = 'Override with file and defaults';
+$string['uuupdatemissing'] = 'Fill in missing from file and defaults';
+$string['uupasswordold'] = 'Existing user password';
+$string['nochanges'] = 'No changes';
+$string['update'] = 'Update';
+$string['allowrename'] = 'Allow renames';
+$string['allowdeletes'] = 'Allow deletes';
+$string['allowsuspend'] = 'Allow suspending and activating of accounts';
+$string['noemailduplicate'] = 'No duplicate email accounts';
+$string['standardusername'] = 'Standardise usernames';
+$string['yes'] = 'Yes';
+$string['no'] = 'No';
 
 //useruploads page
 $string['delete_userupload'] = 'Delete user upload instance';
