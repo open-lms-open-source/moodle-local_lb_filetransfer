@@ -110,6 +110,13 @@ $string['pluginname_description'] = 'Learnbook File Transfer plugin to automate 
 //task
 $string['filetransfertask'] = 'Learnbook File trasfer';
 
+//event
+$string['filetransferstarted'] = 'File transfer process started.';
+$string['filetransferevent'] = 'User upload process';
+$string['filetransfersuccess'] = 'File Transfer process and user upload completed successfully.';
+$string['filetransfererror'] = 'Error, can not get file from remote directory';
+$string['filetransfererrorcsv'] = 'User upload not successful, check the uploaded CSV.';
+
 //general table
 $string['go-back'] = 'Go back';
 $string['createnew'] = 'Create new';

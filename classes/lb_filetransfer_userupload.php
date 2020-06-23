@@ -26,8 +26,23 @@ require($CFG->dirroot.'/local/lb_filetransfer/classes/lb_filetransfer_helper.php
  */
 class lb_filetransfer_userupload {
 
-    public function archiveDir ($localdir,$filename) {
-        //fielsystem api to be used in the next phase
+    /**
+     * Triggers event.
+     * @return string
+     * @throws coding_exception
+     */
+    public function eventTrigger($description) {
+        $event = \local_lb_filetransfer\event\filetransfer_event::create(array(
+            'other' => $description
+        ));
+        $event->trigger();
+    }
+
+    /**
+     * Archives directory.
+     * @return string
+     */
+    public function archive_directory($localdir,$filename) {
         global $CFG;
         if (file_exists ($CFG->dataroot . '/temp/lb_filetransfer/lb_filetransfer_backup')) {
             mtrace("Backup folder already exists, using existing one.");
@@ -53,6 +68,10 @@ class lb_filetransfer_userupload {
         return $archiveDir;
     }
 
+    /**
+     * Creates local directory.
+     * @return string
+     */
     public function create_local_dir() {
         global $CFG;
         if (file_exists ($CFG->dataroot . '/temp/lb_filetransfer')) {
@@ -66,12 +85,29 @@ class lb_filetransfer_userupload {
         return $tempdir;
     }
 
+    /**
+     * Cohort select future update changes.
+     * @return string
+     * @throws dml_exception
+     */
+    public function cohortSelect() {
+        global $DB;
+        $sql = "SELECT shortname
+            FROM {user_info_field}
+            WHERE datatype = 'cohortselect'";
+        $dbOutput = $DB->get_record_sql($sql)->shortname;
+        //var_dump($dbOutput);die;
+        if (!empty($dbOutput)) {
+            $dbOutput = 'profile_field_'.$dbOutput;
+        }
+        return $dbOutput;
+    }
+
 
     /**
      * Gets the connections and userupload instance.
-     * @return bool
+     * @return void
      * @throws dml_exception
-     * @throws coding_exception
      */
     public function get_userupload_file() {
         global $CFG, $DB, $USER;
@@ -117,13 +153,11 @@ class lb_filetransfer_userupload {
 
                 //Transferred the file from remote directory.
                 $sftp->get($remotedir.$filename, $fileToUpload);
+
                 //Changed permission of the file to 0777.
                 chmod($fileToUpload,0777);
+
                 //Starting user upload.
-
-
-
-
                 $admin = get_admin();
                 $USER = $admin;
                 mtrace('Setting encoding and delimiter.');
@@ -135,7 +169,7 @@ class lb_filetransfer_userupload {
                 $cir = new csv_import_reader($iid, 'uploaduser');
                 $content = file_get_contents($filepath);
                 if(!$content) {
-                    mtrace("No file was found at ".$filepath);
+                    mtrace("No content was found at ".$filepath);
                     $status = true;
                 }
                 $readcount = $cir->load_csv_content($content, $encoding, $delimiter_name);
@@ -236,7 +270,7 @@ class lb_filetransfer_userupload {
 
                 if ((int)$connection->archivefile) {
                     mtrace("Archiving uploaded file.");
-                    $path = self::archiveDir($localdir,$filename);
+                    $path = self::archive_directory($localdir,$filename);
                     $days = (int)$connection->archiveperiod;
                     // Open the directory
                     if ($handle = opendir($path))
@@ -261,11 +295,16 @@ class lb_filetransfer_userupload {
                     fulldelete($tempdir.$filename);
                     mtrace("Deleted temporary file.");
                 }
-                //add event
+//                if ($status) {
+//                    self::eventTrigger(get_string('filetransfersuccess', 'local_lb_filetransfer'));
+//                } else {
+//                    self::eventTrigger(get_string('filetransfererror', 'local_lb_filetransfer'));
+//                }
             } else {
                 //add event
                 mtrace("Connection error");
             }
         }
     }
+
 }
