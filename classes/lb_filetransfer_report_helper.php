@@ -14,9 +14,9 @@ require_once($CFG->dirroot .'/local/lb_filetransfer/lib/phpseclib/Net/SFTP.php')
 require_once($CFG->dirroot .'/local/lb_filetransfer/lib/phpseclib/Crypt/RSA.php');
 
 /**
- * Class lb_filetransfer_helper represents a lb_filetransfer_helper object.
+ * Class lb_filetransfer_report_helper represents the helper functions available outgoing report.
  */
-class lb_filetransfer_helper {
+class lb_filetransfer_report_helper {
 
     public $connectiontype = 0;
     public $hostname = null;
@@ -29,15 +29,8 @@ class lb_filetransfer_helper {
     public $filename = null;
     public $archivefile = 0;
     public $archiveperiod = 0;
-    public $uutype = 0;
-    public $uupasswordnew = 0;
-    public $uuupdatetype = 0;
-    public $uupasswordold = 0;
-    public $allowrename = 0;
-    public $allowdeletes = 0;
-    public $allowsuspend = 0;
-    public $noemailduplicate = 0;
-    public $standardusername = 0;
+    public $email = null;
+
 
     /**
      * lb_filetransfer_helper constructor.
@@ -78,15 +71,7 @@ class lb_filetransfer_helper {
             $this->filename = $directory->filename;
             $this->archivefile = $directory->archivefile;
             $this->archiveperiod = $directory->archiveperiod;
-            $this->uutype = $directory->uutype;
-            $this->uupasswordnew = $directory->uupasswordnew;
-            $this->uuupdatetype = $directory->uuupdatetype;
-            $this->uupasswordold = $directory->uupasswordold;
-            $this->allowrename = $directory->allowrename;
-            $this->allowdeletes = $directory->allowdeletes;
-            $this->allowsuspend = $directory->allowsuspend;
-            $this->noemailduplicate = $directory->noemailduplicate;
-            $this->standardusername = $directory->standardusername;
+            $this->email = $directory->email;
         }
     }
 
@@ -108,10 +93,42 @@ class lb_filetransfer_helper {
      */
     private function load_directory($objectid) {
         global $DB;
-        $directory = $DB->get_record('local_lb_filetr_uploads',
-            array('id' => $objectid));
+        $directory = $DB->get_record('local_lb_filetr_reports', array('id' => $objectid));
         $this->load_connections((int)$directory->connectionid);
         $this->construct_directory($directory);
+    }
+
+    /**
+     * validates email.
+     * @param $email
+     * @return bool
+     */
+    public function validate_emails($email)
+    {
+        if (!empty($email)) {
+            $domain = ltrim(stristr($email, '@'), '@') . '.';
+            $user = stristr($email, '@', TRUE);
+            if (!empty($user) && !empty($domain) && checkdnsrr($domain)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * constructs emails.
+     * @return array
+     */
+    public function construct_email() {
+        $emails = explode (",", $this->email);
+        foreach ($emails as $key => $email) {
+            $emails[$key] = trim($email);
+            //email validation
+            if (!self::validate_emails($email)) {
+                unset($emails[$key]);
+            }
+        }
+        return $emails;
     }
 
     /**
@@ -124,24 +141,14 @@ class lb_filetransfer_helper {
 //            eventDescription (get_string('connectionerrornohost', 'local_lb_filetransfer'));
             return false;
         }
-
         $port = $this->portnumber;
         $username = $this->username;
         $sftp = new Net_SFTP($host, $port);
-
-        if (empty($this->pathtofile)) {
-            $remotedir = '/';
-        }
-        else {
-            $remotedir = $this->pathtofile;
-        }
-
         $filename = $this->filename;
 
         if ($this->usepublickey == 0) {
             $password = $this->password;
             if (!$sftp->login($username, $password)) {
-
 //                eventDescription (get_string('connectionerrorpassword', 'local_lb_filetransfer'));
                 return false;
             }
@@ -149,26 +156,11 @@ class lb_filetransfer_helper {
             $key = new Crypt_RSA();
             $key->loadKey($this->privatekey);
             if (!$sftp->login($username, $key)) {
-
 //                eventDescription (get_string('connectionerrorrsa', 'local_lb_filetransfer'));
                 return false;
             }
         }
-        if (!empty($filename)) {
-            if ($sftp->file_exists($remotedir . $filename)) {
-                if (!$sftp->is_readable($remotedir . $filename)) {
-
-//                    eventDescription (get_string('filedirectoryerror', 'local_lb_filetransfer'));
-                    return false;
-                }
-            } else {
-
-//                eventDescription (get_string('filedirectoryerrornomatch', 'local_lb_filetransfer'));
-                return false;
-            }
-        } else {
-
-//            eventDescription (get_string('filedirectoryerrornofile', 'local_lb_filetransfer'));
+        if (empty($filename)) {
             return false;
         }
         return true;

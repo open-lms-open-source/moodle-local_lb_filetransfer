@@ -108,7 +108,8 @@ $string['pluginname_description'] = 'Learnbook File Transfer plugin to automate 
 //$string['filetransfererrorcsv'] = 'User upload not successful, check the uploaded CSV.';
 
 //task
-$string['filetransfertask'] = 'Learnbook File trasfer';
+$string['filetransfertask_upload'] = 'User upload';
+$string['filetransfertask_report'] = 'Outgoing report';
 
 //event
 $string['filetransferstarted'] = 'File transfer process started.';

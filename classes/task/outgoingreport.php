@@ -14,15 +14,15 @@ namespace local_lb_filetransfer\task;
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require($CFG->dirroot.'/local/lb_filetransfer/classes/lb_filetransfer_userupload.php');
+require($CFG->dirroot.'/local/lb_filetransfer/classes/lb_filetransfer_outgoingreport.php');
 
-class filetransfer extends \core\task\scheduled_task {
+class outgoingreport extends \core\task\scheduled_task {
 
     public function get_name() {
-        return get_string('filetransfertask_upload', 'local_lb_filetransfer');
+        return get_string('filetransfertask_report', 'local_lb_filetransfer');
     }
 
     public function execute() {
-        (new \lb_filetransfer_userupload)->get_userupload_file();
+        (new \lb_filetransfer_outgoingreport)->send_outgoingreport();
     }
 }

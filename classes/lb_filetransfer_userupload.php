@@ -21,8 +21,9 @@ require_once($CFG->dirroot.'/cohort/lib.php');
 require_once($CFG->dirroot.'/admin/tool/uploaduser/locallib.php');
 require_once($CFG->dirroot.'/admin/tool/uploaduser/user_form.php');
 require($CFG->dirroot.'/local/lb_filetransfer/classes/lb_filetransfer_helper.php');
+
 /**
- * Class lb_filetransfer_userupload represents all the available constants.
+ * Class lb_filetransfer_userupload represents all the available userupload object.
  */
 class lb_filetransfer_userupload {
 
@@ -90,7 +91,7 @@ class lb_filetransfer_userupload {
      * @return string
      * @throws dml_exception
      */
-    public function cohortSelect() {
+    public function cohort_select() {
         global $DB;
         $sql = "SELECT shortname
             FROM {user_info_field}
@@ -101,6 +102,151 @@ class lb_filetransfer_userupload {
             $dbOutput = 'profile_field_'.$dbOutput;
         }
         return $dbOutput;
+    }
+
+    /**
+     * Gets the file and uploads users.
+     * @param $fileToUpload
+     * @param $connection
+     * @return bool
+     */
+    public function user_upload ($fileToUpload, $connection) {
+        global $CFG, $USER, $DB;
+        $admin = get_admin();
+        $USER = $admin;
+        mtrace('Setting encoding and delimiter.');
+        $encoding = 'UTF-8';
+        $delimiter_name = 'comma';
+        mtrace('Processing the file.');
+        $filepath = $fileToUpload;
+        $iid = csv_import_reader::get_new_iid('uploaduser');
+        $cir = new csv_import_reader($iid, 'uploaduser');
+        $content = file_get_contents($filepath);
+        if(!$content) {
+            mtrace("No content was found at ".$filepath);
+            return true;
+        }
+        $readcount = $cir->load_csv_content($content, $encoding, $delimiter_name);
+        $csvloaderror = $cir->get_error();
+        mtrace('Posting form data to mform.');
+        $formdata = new stdClass();
+        $_POST['iid'] = $iid;
+        $_POST['previewrows'] = '10';
+        //$_POST['uutype'] = UU_USER_ADD_UPDATE;
+        $_POST['uutype'] = (int)$connection->uutype;
+        //$_POST['uupasswordnew'] = '1';
+        $_POST['uupasswordnew'] = (int)$connection->uupasswordnew;
+        //$_POST['uuupdatetype'] = UU_UPDATE_ALLOVERRIDE;
+        $_POST['uuupdatetype'] = (int)$connection->uuupdatetype;
+        //$_POST['uupasswordold'] = '0';
+        $_POST['uupasswordold'] = (int)$connection->uupasswordold;
+        //$_POST['uuforcepasswordchange'] = UU_PWRESET_NONE;
+        $_POST['uuforcepasswordchange'] = (int)$connection->uupasswordold;
+        //$_POST['allowrenames'] = '0';
+        $_POST['allowrenames'] = (int)$connection->allowrename;
+        //$_POST['uuallowdeletes'] = '0';
+        $_POST['uuallowdeletes'] = (int)$connection->allowdeletes;
+        //$_POST['uuallowsuspends'] = '1';
+        $_POST['uuallowsuspends'] = (int)$connection->allowsuspend;
+        //$_POST['uunoemailduplicates'] = '1';
+        $_POST['uunoemailduplicates'] = (int)$connection->noemailduplicate;
+        //$_POST['uustandardusernames'] = '1';
+        $_POST['uustandardusernames'] = (int)$connection->standardusername;
+        $_POST['uubulk'] = UU_BULK_ALL;
+        //$_POST['uuallowrenames'] = '0';
+        $_POST['uuallowrenames'] = (int)$connection->allowrename;
+
+        /* //cohort select plugin doesn't accept csv upload. When that plugin is changed, this feature can be used.
+        $cohortSelect = cohort_select();
+        if (!empty($cohortSelect)) {
+            $_POST[$cohortSelect] = '_qf__force_multiselect_submission';
+        }*/
+
+        $_POST['_qf__admin_uploaduser_form2'] = '1';
+        $_POST['submitbutton'] = 'Upload users';
+        $_POST['sesskey'] = sesskey();
+        $templateuser = $USER;
+
+        mtrace('Setting up the default profile fields.');
+        $_POST['auth'] = 'manual';
+        $_POST['maildisplay'] = 2;
+        $_POST['mailformat'] = 1;
+        $_POST['maildigest'] = 0;
+        $_POST['autosubscribe'] = 1;
+        $_POST['city'] = '';
+        $_POST['country'] = $templateuser->country;
+        $_POST['timezone'] = $templateuser->timezone;
+        $_POST['lang'] = $templateuser->lang;
+        $_POST['description'] = '';
+        $_POST['url'] = '';
+        $_POST['idnumber'] = '';
+        $_POST['institution'] = '';
+        $_POST['department'] = '';
+        $_POST['phone1'] = '';
+        $_POST['phone2'] = '';
+        $_POST['address'] = '';
+        $_POST['uutype'] = (int)$connection->uutype;
+        $_POST['submitbutton'] = 'submit';
+
+        mtrace('Getting the moodle upload user codes.');
+        ob_start();
+        chdir($CFG->dirroot . '/admin/tool/uploaduser');
+        $indexfile = file_get_contents($CFG->dirroot . '/admin/tool/uploaduser/index.php');
+        $indexfile = str_replace("<?php","",$indexfile);
+        $indexfile = str_replace("require('../../../config.php');",'', $indexfile);
+        $indexfile = str_replace("echo $OUTPUT", "// echo $OUTPUT", $indexfile);
+        $indexfile = str_replace("die;", "return;", $indexfile);
+
+        mtrace('Executing the codes.');
+        try {
+            eval($indexfile);
+            mtrace('Code executed.');
+        }
+        catch (Exception $e) {
+            $output = ob_get_clean();
+            mtrace('Code execution error.');
+            return false;
+        }
+
+        mtrace('Codes executed, preventing any output from echo statements.');
+        $output = ob_get_clean();
+
+        mtrace('Users upload successfull.');
+        return true;
+    }
+
+    /**
+     * Gets the files and archives them.
+     * @return void
+     */
+    public function archive_file ($archive_enabled, $archive_period, $localdir, $filename, $tempdir) {
+        if ($archive_enabled) {
+            mtrace("Archiving uploaded file.");
+            $path = self::archive_directory($localdir,$filename);
+            $days = $archive_period;
+            // Open the directory
+            if ($handle = opendir($path))
+            {
+                // Loop through the directory
+                while (false !== ($file = readdir($handle)))
+                {
+                    // Check the file we're doing is actually a file
+                    if (is_file($path.$file))
+                    {
+                        // Check if the file is older than X days old
+                        if (filemtime($path.$file) < ( time() - ( $days * 24 * 60 * 60 ) ) )
+                        {
+                            // Do the deletion
+                            unlink($path.$file);
+                        }
+                    }
+                }
+            }
+            mtrace("Deleted old files.");
+        } else {
+            fulldelete($tempdir.$filename);
+            mtrace("Deleted temporary file.");
+        }
     }
 
 
@@ -116,7 +262,7 @@ class lb_filetransfer_userupload {
                                                                WHERE active = :active',
                                                                array('active' => 1));
         foreach ($get_userupload_instances as $userupload) {
-            $connection = new lb_filetransfer_helper(0, (int)$userupload->id);
+            $connection = new lb_filetransfer_helper((int)$userupload->id);
             if($connection->test_connection()) {
                 //add event
                 $host = $connection->hostname;
@@ -157,109 +303,9 @@ class lb_filetransfer_userupload {
                 //Changed permission of the file to 0777.
                 chmod($fileToUpload,0777);
 
-                //Starting user upload.
-                $admin = get_admin();
-                $USER = $admin;
-                mtrace('Setting encoding and delimiter.');
-                $encoding = 'UTF-8';
-                $delimiter_name = 'comma';
-                mtrace('Processing the file.');
-                $filepath = $fileToUpload;
-                $iid = csv_import_reader::get_new_iid('uploaduser');
-                $cir = new csv_import_reader($iid, 'uploaduser');
-                $content = file_get_contents($filepath);
-                if(!$content) {
-                    mtrace("No content was found at ".$filepath);
-                    $status = true;
-                }
-                $readcount = $cir->load_csv_content($content, $encoding, $delimiter_name);
-                $csvloaderror = $cir->get_error();
-                mtrace('Posting form data to mform.');
-                $formdata = new stdClass();
-                $_POST['iid'] = $iid;
-                $_POST['previewrows'] = '10';
-                //$_POST['uutype'] = UU_USER_ADD_UPDATE;
-                $_POST['uutype'] = (int)$connection->uutype;
-                //$_POST['uupasswordnew'] = '1';
-                $_POST['uupasswordnew'] = (int)$connection->uupasswordnew;
-                //$_POST['uuupdatetype'] = UU_UPDATE_ALLOVERRIDE;
-                $_POST['uuupdatetype'] = (int)$connection->uuupdatetype;
-                //$_POST['uupasswordold'] = '0';
-                $_POST['uupasswordold'] = (int)$connection->uupasswordold;
-                //$_POST['uuforcepasswordchange'] = UU_PWRESET_NONE;
-                $_POST['uuforcepasswordchange'] = (int)$connection->uupasswordold;
-                //$_POST['allowrenames'] = '0';
-                $_POST['allowrenames'] = (int)$connection->allowrename;
-                //$_POST['uuallowdeletes'] = '0';
-                $_POST['uuallowdeletes'] = (int)$connection->allowdeletes;
-                //$_POST['uuallowsuspends'] = '1';
-                $_POST['uuallowsuspends'] = (int)$connection->allowsuspend;
-                //$_POST['uunoemailduplicates'] = '1';
-                $_POST['uunoemailduplicates'] = (int)$connection->noemailduplicate;
-                //$_POST['uustandardusernames'] = '1';
-                $_POST['uustandardusernames'] = (int)$connection->standardusername;
-                $_POST['uubulk'] = UU_BULK_ALL;
-                //$_POST['uuallowrenames'] = '0';
-                $_POST['uuallowrenames'] = (int)$connection->allowrename;
-
-                /* //cohort select plugin doesn't accept csv upload. When that plugin is changed, this feature can be used.
-                $cohortSelect = cohortSelect();
-                if (!empty($cohortSelect)) {
-                    $_POST[$cohortSelect] = '_qf__force_multiselect_submission';
-                }*/
-
-                $_POST['_qf__admin_uploaduser_form2'] = '1';
-                $_POST['submitbutton'] = 'Upload users';
-                $_POST['sesskey'] = sesskey();
-                $templateuser = $USER;
-
-                mtrace('Setting up the default profile fields.');
-                $_POST['auth'] = 'manual';
-                $_POST['maildisplay'] = 2;
-                $_POST['mailformat'] = 1;
-                $_POST['maildigest'] = 0;
-                $_POST['autosubscribe'] = 1;
-                $_POST['city'] = '';
-                $_POST['country'] = $templateuser->country;
-                $_POST['timezone'] = $templateuser->timezone;
-                $_POST['lang'] = $templateuser->lang;
-                $_POST['description'] = '';
-                $_POST['url'] = '';
-                $_POST['idnumber'] = '';
-                $_POST['institution'] = '';
-                $_POST['department'] = '';
-                $_POST['phone1'] = '';
-                $_POST['phone2'] = '';
-                $_POST['address'] = '';
-                $_POST['uutype'] = (int)$connection->uutype;
-                $_POST['submitbutton'] = 'submit';
-
-                mtrace('Getting the moodle upload user codes.');
-                ob_start();
-                chdir($CFG->dirroot . '/admin/tool/uploaduser');
-                $indexfile = file_get_contents($CFG->dirroot . '/admin/tool/uploaduser/index.php');
-                $indexfile = str_replace("<?php","",$indexfile);
-                $indexfile = str_replace("require('../../../config.php');",'', $indexfile);
-                $indexfile = str_replace("echo $OUTPUT", "// echo $OUTPUT", $indexfile);
-                $indexfile = str_replace("die;", "return;", $indexfile);
-
-                mtrace('Executing the codes.');
-                try {
-                    eval($indexfile);
-                    mtrace('Code executed.');
-                }
-                catch (Exception $e) {
-                    $output = ob_get_clean();
-                    mtrace('Code execution error.');
-                    $status = false;
-                }
-
-                mtrace('Codes executed, preventing any output from echo statements.');
-                $output = ob_get_clean();
-
-                mtrace('Users upload successfull.');
-                $status = true;
-                if ($status) {
+                //starting upload
+                $userupload_status = self::user_upload($fileToUpload, $connection);
+                if ($userupload_status) {
                     //add event
                     mtrace("File transfer process completed.");
                 }
@@ -267,39 +313,9 @@ class lb_filetransfer_userupload {
                     //add event
                     mtrace("File transfer process not completed.");
                 }
+                //file archive
+                self::archive_file((int)$connection->archivefile, (int)$connection->archiveperiod, $localdir, $filename, $tempdir);
 
-                if ((int)$connection->archivefile) {
-                    mtrace("Archiving uploaded file.");
-                    $path = self::archive_directory($localdir,$filename);
-                    $days = (int)$connection->archiveperiod;
-                    // Open the directory
-                    if ($handle = opendir($path))
-                    {
-                        // Loop through the directory
-                        while (false !== ($file = readdir($handle)))
-                        {
-                            // Check the file we're doing is actually a file
-                            if (is_file($path.$file))
-                            {
-                                // Check if the file is older than X days old
-                                if (filemtime($path.$file) < ( time() - ( $days * 24 * 60 * 60 ) ) )
-                                {
-                                    // Do the deletion
-                                    unlink($path.$file);
-                                }
-                            }
-                        }
-                    }
-                    mtrace("Deleted old files.");
-                } else {
-                    fulldelete($tempdir.$filename);
-                    mtrace("Deleted temporary file.");
-                }
-//                if ($status) {
-//                    self::eventTrigger(get_string('filetransfersuccess', 'local_lb_filetransfer'));
-//                } else {
-//                    self::eventTrigger(get_string('filetransfererror', 'local_lb_filetransfer'));
-//                }
             } else {
                 //add event
                 mtrace("Connection error");
