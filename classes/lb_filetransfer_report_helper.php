@@ -25,6 +25,7 @@ class lb_filetransfer_report_helper {
     public $password = null;
     public $usepublickey = 0;
     public $privatekey = null;
+    public $configurablereportid = 0;
     public $pathtofile = null;
     public $filename = null;
     public $archivefile = 0;
@@ -67,6 +68,7 @@ class lb_filetransfer_report_helper {
      */
     public function construct_directory($directory) {
         if (!empty($directory)) {
+            $this->configurablereportid = $directory->configurablereportid;
             $this->pathtofile = $directory->pathtofile;
             $this->filename = $directory->filename;
             $this->archivefile = $directory->archivefile;
