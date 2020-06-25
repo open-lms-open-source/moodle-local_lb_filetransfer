@@ -1,7 +1,8 @@
 # Learnbook File Transfer #
 
-Learnbook File Transfer is a local plugin to automate user upload in Moodle. 
-This plugin will pull the CSV file from remote repository and upload that in Moodle.
+Learnbook File Transfer is a local plugin to automate user upload and outgoing report in Moodle. 
+This plugin will pull the CSV file from a remote repository and upload that in Moodle and generate the report and send
+it back to the remote directory or email.
 
 Minimum Requirements:
 Moodle Version: 3.6
@@ -11,7 +12,7 @@ Please navigate to eCreators Academy for tutorials regarding this plugin.
 
 ## License ##
 
-2019 A K M Safat Shahin <safat@ecreators.com.au>
+2020 Ecreators A K M Safat Shahin <safat@ecreators.com.au>
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software

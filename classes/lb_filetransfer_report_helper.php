@@ -18,6 +18,7 @@ require_once($CFG->dirroot .'/local/lb_filetransfer/lib/phpseclib/Crypt/RSA.php'
  */
 class lb_filetransfer_report_helper {
 
+    public $connectionid = 0;
     public $connectiontype = 0;
     public $hostname = null;
     public $portnumber = 0;
@@ -25,11 +26,13 @@ class lb_filetransfer_report_helper {
     public $password = null;
     public $usepublickey = 0;
     public $privatekey = null;
+    public $outgoingreportpreference = 0;
     public $configurablereportid = 0;
     public $pathtofile = null;
     public $filename = null;
     public $archivefile = 0;
     public $archiveperiod = 0;
+    public $emailpreference = 0;
     public $email = null;
 
 
@@ -52,6 +55,7 @@ class lb_filetransfer_report_helper {
      */
     public function construct_connection($connections) {
         if (!empty($connections)) {
+            $this->connectionid = $connections->id;
             $this->connectiontype = $connections->connectiontype;
             $this->hostname = $connections->hostname;
             $this->portnumber = $connections->portnumber;
@@ -68,11 +72,13 @@ class lb_filetransfer_report_helper {
      */
     public function construct_directory($directory) {
         if (!empty($directory)) {
+            $this->outgoingreportpreference = $directory->outgoingreportpreference;
             $this->configurablereportid = $directory->configurablereportid;
             $this->pathtofile = $directory->pathtofile;
             $this->filename = $directory->filename;
             $this->archivefile = $directory->archivefile;
             $this->archiveperiod = $directory->archiveperiod;
+            $this->emailpreference = $directory->emailpreference;
             $this->email = $directory->email;
         }
     }
@@ -96,8 +102,21 @@ class lb_filetransfer_report_helper {
     private function load_directory($objectid) {
         global $DB;
         $directory = $DB->get_record('local_lb_filetr_reports', array('id' => $objectid));
-        $this->load_connections((int)$directory->connectionid);
         $this->construct_directory($directory);
+        $this->load_connections((int)$directory->connectionid);
+    }
+
+    /**
+     * Triggers event.
+     * @param $description
+     * @return string
+     * @throws coding_exception
+     */
+    public function eventTrigger($description) {
+        $event = \local_lb_filetransfer\event\filetransfer_event::create(array(
+            'other' => $description
+        ));
+        $event->trigger();
     }
 
     /**
@@ -136,11 +155,11 @@ class lb_filetransfer_report_helper {
     /**
      * Tests the connection and directory.
      * @return bool
+     * @throws coding_exception
      */
     public function test_connection () {
         $host = $this->hostname;
         if (empty($host)) {
-//            eventDescription (get_string('connectionerrornohost', 'local_lb_filetransfer'));
             return false;
         }
         $port = $this->portnumber;
@@ -151,14 +170,18 @@ class lb_filetransfer_report_helper {
         if ($this->usepublickey == 0) {
             $password = $this->password;
             if (!$sftp->login($username, $password)) {
-//                eventDescription (get_string('connectionerrorpassword', 'local_lb_filetransfer'));
+                $a = new stdClass();
+                $a->id = $this->connectionid;
+                self::eventTrigger(get_string('filetransfertask_auth_error', 'local_lb_filetransfer', $a));
                 return false;
             }
         } else {
             $key = new Crypt_RSA();
             $key->loadKey($this->privatekey);
             if (!$sftp->login($username, $key)) {
-//                eventDescription (get_string('connectionerrorrsa', 'local_lb_filetransfer'));
+                $a = new stdClass();
+                $a->id = $this->connectionid;
+                self::eventTrigger(get_string('filetransfertask_key_error', 'local_lb_filetransfer', $a));
                 return false;
             }
         }

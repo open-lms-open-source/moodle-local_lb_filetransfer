@@ -18,6 +18,7 @@ require_once($CFG->dirroot .'/local/lb_filetransfer/lib/phpseclib/Crypt/RSA.php'
  */
 class lb_filetransfer_helper {
 
+    public $connectionid = 0;
     public $connectiontype = 0;
     public $hostname = null;
     public $portnumber = 0;
@@ -58,6 +59,7 @@ class lb_filetransfer_helper {
      */
     public function construct_connection($connections) {
         if (!empty($connections)) {
+            $this->connectionid = $connections->id;
             $this->connectiontype = $connections->connectiontype;
             $this->hostname = $connections->hostname;
             $this->portnumber = $connections->portnumber;
@@ -115,13 +117,26 @@ class lb_filetransfer_helper {
     }
 
     /**
+     * Triggers event.
+     * @param $description
+     * @return string
+     * @throws coding_exception
+     */
+    public function eventTrigger($description) {
+        $event = \local_lb_filetransfer\event\filetransfer_event::create(array(
+            'other' => $description
+        ));
+        $event->trigger();
+    }
+
+    /**
      * Tests the connection and directory.
      * @return bool
+     * @throws coding_exception
      */
     public function test_connection () {
         $host = $this->hostname;
         if (empty($host)) {
-//            eventDescription (get_string('connectionerrornohost', 'local_lb_filetransfer'));
             return false;
         }
 
@@ -137,38 +152,39 @@ class lb_filetransfer_helper {
         }
 
         $filename = $this->filename;
-
         if ($this->usepublickey == 0) {
             $password = $this->password;
             if (!$sftp->login($username, $password)) {
-
-//                eventDescription (get_string('connectionerrorpassword', 'local_lb_filetransfer'));
+                $a = new stdClass();
+                $a->id = $this->connectionid;
+                self::eventTrigger(get_string('filetransfertask_auth_error', 'local_lb_filetransfer', $a));
                 return false;
             }
         } else {
             $key = new Crypt_RSA();
             $key->loadKey($this->privatekey);
             if (!$sftp->login($username, $key)) {
-
-//                eventDescription (get_string('connectionerrorrsa', 'local_lb_filetransfer'));
+                $a = new stdClass();
+                $a->id = $this->connectionid;
+                self::eventTrigger(get_string('filetransfertask_key_error', 'local_lb_filetransfer', $a));
                 return false;
             }
         }
         if (!empty($filename)) {
             if ($sftp->file_exists($remotedir . $filename)) {
                 if (!$sftp->is_readable($remotedir . $filename)) {
-
-//                    eventDescription (get_string('filedirectoryerror', 'local_lb_filetransfer'));
+                    $a = new stdClass();
+                    $a->id = $this->connectionid;
+                    self::eventTrigger(get_string('filetransfertask_fileread_error', 'local_lb_filetransfer', $a));
                     return false;
                 }
             } else {
-
-//                eventDescription (get_string('filedirectoryerrornomatch', 'local_lb_filetransfer'));
+                $a = new stdClass();
+                $a->id = $this->connectionid;
+                self::eventTrigger(get_string('filetransfertask_nofile_error', 'local_lb_filetransfer', $a));
                 return false;
             }
         } else {
-
-//            eventDescription (get_string('filedirectoryerrornofile', 'local_lb_filetransfer'));
             return false;
         }
         return true;

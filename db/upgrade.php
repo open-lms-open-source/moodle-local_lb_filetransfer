@@ -37,7 +37,7 @@ function xmldb_local_lb_filetransfer_upgrade($oldversion) {
     global $DB;
 
     $dbman = $DB->get_manager();
-    if ($oldversion < 20200062301) {
+    if ($oldversion < 20200062500) {
         $table = new xmldb_table('local_lb_filetr_connections');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
         $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, null, null);
@@ -92,12 +92,14 @@ function xmldb_local_lb_filetransfer_upgrade($oldversion) {
         $table = new xmldb_table('local_lb_filetr_reports');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
         $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, null, null);
+        $table->add_field('outgoingreportpreference', XMLDB_TYPE_INTEGER, '1', null, null, null, 1);
         $table->add_field('connectionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null);
         $table->add_field('configurablereportid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null);
         $table->add_field('pathtofile', XMLDB_TYPE_CHAR, '255', null, null, null);
         $table->add_field('filename', XMLDB_TYPE_CHAR, '255', null, null, null);
         $table->add_field('archivefile', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 0);
         $table->add_field('archiveperiod', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
+        $table->add_field('emailpreference', XMLDB_TYPE_INTEGER, '1', null, null, null, 1);
         $table->add_field('email', XMLDB_TYPE_CHAR, '1024', null, null, null);
         $table->add_field('active', XMLDB_TYPE_INTEGER, '1', null, null, null, 1);
         $table ->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, null, null);

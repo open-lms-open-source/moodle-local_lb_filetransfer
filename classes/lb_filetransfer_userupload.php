@@ -29,6 +29,7 @@ class lb_filetransfer_userupload {
 
     /**
      * Triggers event.
+     * @param $description
      * @return string
      * @throws coding_exception
      */
@@ -41,9 +42,11 @@ class lb_filetransfer_userupload {
 
     /**
      * Archives directory.
+     * @param $localdir
+     * @param $filename
      * @return string
      */
-    public function archive_directory($localdir,$filename) {
+    public function archive_directory($localdir, $filename) {
         global $CFG;
         if (file_exists ($CFG->dataroot . '/temp/lb_filetransfer/lb_filetransfer_backup')) {
             mtrace("Backup folder already exists, using existing one.");
@@ -217,6 +220,11 @@ class lb_filetransfer_userupload {
 
     /**
      * Gets the files and archives them.
+     * @param $archive_enabled
+     * @param $archive_period
+     * @param $localdir
+     * @param $filename
+     * @param $tempdir
      * @return void
      */
     public function archive_file ($archive_enabled, $archive_period, $localdir, $filename, $tempdir) {
@@ -249,11 +257,10 @@ class lb_filetransfer_userupload {
         }
     }
 
-
     /**
      * Gets the connections and userupload instance.
      * @return void
-     * @throws dml_exception
+     * @throws dml_exception|coding_exception
      */
     public function get_userupload_file() {
         global $CFG, $DB, $USER;
@@ -306,18 +313,27 @@ class lb_filetransfer_userupload {
                 //starting upload
                 $userupload_status = self::user_upload($fileToUpload, $connection);
                 if ($userupload_status) {
-                    //add event
+                    $a = new stdClass();
+                    $a->id = $userupload->id;
+                    self::eventTrigger(get_string('filetransfertask_userupload', 'local_lb_filetransfer', $a));
                     mtrace("File transfer process completed.");
                 }
                 else {
-                    //add event
+                    $a = new stdClass();
+                    $a->id = $userupload->id;
+                    self::eventTrigger(get_string('filetransfertask_userupload_error', 'local_lb_filetransfer', $a));
                     mtrace("File transfer process not completed.");
                 }
                 //file archive
                 self::archive_file((int)$connection->archivefile, (int)$connection->archiveperiod, $localdir, $filename, $tempdir);
+                $a->id = $outgoingreport->id;
+                $log_data[] = get_string('filetransfertask_userfilearchive', 'local_lb_filetransfer', $a);
+                self::eventTrigger(get_string('filetransfertask_userfilearchive', 'local_lb_filetransfer', $a));
 
             } else {
-                //add event
+                $a = new stdClass();
+                $a->id = $userupload->id;
+                self::eventTrigger(get_string('filetransfertask_connection_error', 'local_lb_filetransfer', $a));
                 mtrace("Connection error");
             }
         }

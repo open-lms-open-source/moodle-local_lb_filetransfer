@@ -16,12 +16,14 @@ defined('MOODLE_INTERNAL') || die;
 class outgoingreports_page {
 
     public $name = null;
+    public $outgoingreportpreference = 0;
     public $connectionid = 0;
     public $configurablereportid = 0;
     public $pathtofile = null;
     public $filename = null;
     public $archivefile = 0;
     public $archiveperiod = 0;
+    public $emailpreference = 0;
     public $email = null;
     public $active = 0;
     public $usermodified = 0;
@@ -47,12 +49,14 @@ class outgoingreports_page {
             global $USER;
             $this->id = $outgoingreports->id;
             $this->name = $outgoingreports->name;
+            $this->outgoingreportpreference = $outgoingreports->outgoingreportpreference;
             $this->connectionid = $outgoingreports->connectionid;
             $this->configurablereportid = $outgoingreports->configurablereportid;
             $this->pathtofile = $outgoingreports->pathtofile;
             $this->filename = $outgoingreports->filename;
             $this->archivefile = $outgoingreports->archivefile;
             $this->archiveperiod = $outgoingreports->archiveperiod;
+            $this->emailpreference = $outgoingreports->emailpreference;
             $this->email = $outgoingreports->email;
             $this->active = $outgoingreports->active;
             $this->usermodified = (int)$USER->id;

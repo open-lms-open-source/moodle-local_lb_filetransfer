@@ -35,9 +35,16 @@ class outgoingreports_form extends moodleform {
         $mform->addRule('name',get_string('maximum_character_255', 'local_lb_filetransfer'), 'maxlength', 255, 'client');
         $mform->setType('name', PARAM_TEXT);
 
+        $outgoingreportpreference = array();
+        $outgoingreportpreference[] = $mform->createElement('radio', 'outgoingreportpreference', '', get_string('outgoingreportpreference_remote', 'local_lb_filetransfer'), 0);
+        $outgoingreportpreference[] = $mform->createElement('radio', 'outgoingreportpreference', '', get_string('outgoingreportpreference_email','local_lb_filetransfer'), 1);
+        $outgoingreportpreference[] = $mform->createElement('radio', 'outgoingreportpreference', '', get_string('outgoingreportpreference_both','local_lb_filetransfer'), 2);
+        $mform->addGroup($outgoingreportpreference, 'outgoingreportpreference', get_string('outgoingreportpreference', 'local_lb_filetransfer'), array(' '), false);
+        $mform->setDefault('outgoingreportpreference', 0);
+
         $connectiontype = (new outgoingreports_page)->get_connections();
         $mform->addElement('select', 'connectionid', get_string('connectionid', 'local_lb_filetransfer'), $connectiontype);
-        $mform->addRule('connectionid', get_string('required'), 'required', null, 'client');
+//        $mform->addRule('connectionid', get_string('required'), 'required', null, 'client');
         $mform->setDefault('connectionid', 0);
 
         $configurablereportid = (new outgoingreports_page)->get_configurable_reports();
@@ -65,6 +72,13 @@ class outgoingreports_form extends moodleform {
         $archiveperiod[] = $mform->createElement('radio', 'archiveperiod', '', get_string('fourweeks', 'local_lb_filetransfer'), 28);
         $mform->addGroup($archiveperiod, 'archiveperiodgr', get_string('archiveperiod', 'local_lb_filetransfer'), array(' '), false);
         $mform->setDefault('archiveperiod', 0);
+
+        $emailpreference = array();
+        $emailpreference[] = $mform->createElement('radio', 'emailpreference', '', get_string('emailpreference_report', 'local_lb_filetransfer'), 0);
+        $emailpreference[] = $mform->createElement('radio', 'emailpreference', '', get_string('emailpreference_log','local_lb_filetransfer'), 1);
+        $emailpreference[] = $mform->createElement('radio', 'emailpreference', '', get_string('emailpreference_both','local_lb_filetransfer'), 2);
+        $mform->addGroup($emailpreference, 'emailpreference', get_string('emailpreference', 'local_lb_filetransfer'), array(' '), false);
+        $mform->setDefault('emailpreference', 0);
 
         $mform->addElement('text', 'email', get_string('email','local_lb_filetransfer'));
         $mform->addRule('email',get_string('maximum_character_255', 'local_lb_filetransfer'), 'maxlength', 255, 'client');
