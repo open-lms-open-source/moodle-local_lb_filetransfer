@@ -29,12 +29,12 @@ class connections_table extends table_sql {
         global $PAGE;
         parent::__construct($uniqueid);
 
-        $columns = array('id', 'name', 'active', 'timecreated', 'timemodified', 'actions');
+        $columns = array('id', 'name', 'active', 'connectioninfo', 'timemodified', 'actions');
         $headers = array(
             get_string('id', 'local_lb_filetransfer'),
             get_string('name','local_lb_filetransfer'),
             get_string('status','local_lb_filetransfer'),
-            get_string('timecreated', 'local_lb_filetransfer'),
+            get_string('connectioninfo', 'local_lb_filetransfer'),
             get_string('timemodified', 'local_lb_filetransfer'),
             get_string('actions','local_lb_filetransfer')
         );
@@ -45,7 +45,7 @@ class connections_table extends table_sql {
         $fields = "id,
         name,
         active,
-        FROM_UNIXTIME(timecreated, '%d/%m/%Y %H:%i:%s') AS timecreated,
+        '' AS connectioninfo,
         FROM_UNIXTIME(timemodified, '%d/%m/%Y %H:%i:%s') AS timemodified,
         timemodified as timemodified_raw,
         '' AS actions";
@@ -84,6 +84,23 @@ class connections_table extends table_sql {
         }
         // Prettifies the return value.
         return '<div class = "text-' . $css . '"><i class = "fa fa-circle"></i>&nbsp;' . $status . '</div>';
+    }
+
+    /**
+     * convert invalid to '-'
+     * @param $values
+     * @return string
+     * @throws dml_exception
+     */
+    public function col_connectioninfo($values) {
+        $connection = new connections_page($values->id);
+        $response = $connection->test_connection();
+        $connection_status = $response['string'];
+        $css = 'success';
+        if (!$response['return']) {
+            $css = 'danger';
+        }
+        return '<div class = "text-' . $css . '">' . $connection_status . '</div>';
     }
 
     /**

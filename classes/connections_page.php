@@ -10,6 +10,10 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+set_include_path(get_include_path(). PATH_SEPARATOR . $CFG->dirroot.'/local/lb_filetransfer/lib/phpseclib');
+require_once($CFG->dirroot .'/local/lb_filetransfer/lib/phpseclib/Net/SFTP.php');
+require_once($CFG->dirroot .'/local/lb_filetransfer/lib/phpseclib/Crypt/RSA.php');
+
 /**
  * Class connections_page represents a connections object.
  */
@@ -117,6 +121,12 @@ class connections_page {
         $this->construct_connections_page($connections_page);
     }
 
+    /**
+     * Checks the data dependency for delete and deactivate.
+     * @param $id
+     * @return bool
+     * @throws dml_exception
+     */
     public function data_dependency_check($id) {
         global $DB;
         $datadependency_userupload = $DB->get_record_sql('SELECT count(id) as datacount
@@ -132,6 +142,50 @@ class connections_page {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Tests the connection and directory.
+     * @return array
+     */
+    public function test_connection () {
+        $host = $this->hostname;
+        if (empty($host)) {
+            $respose = array(
+                'string' => 'Error: hostname empty',
+                'return' => false
+            );
+            return $respose;
+        }
+        $port = $this->portnumber;
+        $username = $this->username;
+        $sftp = new Net_SFTP($host, $port);
+
+        if ($this->usepublickey == 0) {
+            $password = $this->password;
+            if (!$sftp->login($username, $password)) {
+                $respose = array(
+                    'string' => 'Error: can not authenticate.',
+                    'return' => false
+                );
+                return $respose;
+            }
+        } else {
+            $key = new Crypt_RSA();
+            $key->loadKey($this->privatekey);
+            if (!$sftp->login($username, $key)) {
+                $respose = array(
+                    'string' => 'Error: can not authenticate.',
+                    'return' => false
+                );
+                return $respose;
+            }
+        }
+        $respose = array(
+            'string' => 'Connection successful.',
+            'return' => true
+        );
+        return $respose;
     }
 
     /**

@@ -50,6 +50,7 @@ $string['active'] = 'Active';
 $string['inactive'] = 'Inactive';
 $string['activate'] = 'Activate';
 $string['deactivate'] = 'Deactivate';
+$string['connectioninfo'] = 'Connection info';
 
 //index-page
 $string['config_connections'] = 'Configure Connections';
