@@ -51,6 +51,36 @@ class useruploads_form extends moodleform {
         $mform->addRule('filename', get_string('required'), 'required', null, 'client');
         $mform->addRule('filename',get_string('maximum_character_255', 'local_lb_filetransfer'), 'maxlength', 255, 'client');
 
+        $getlatestfile = array();
+        $getlatestfile[] = $mform->createElement('radio', 'getlatestfile', '', get_string('no', 'local_lb_filetransfer'), 0);
+        $getlatestfile[] = $mform->createElement('radio', 'getlatestfile', '', get_string('yes','local_lb_filetransfer'), 1);
+        $mform->addGroup($getlatestfile, 'getlatestfile', get_string('getlatestfile', 'local_lb_filetransfer'), array(' '), false);
+        $mform->setDefault('getlatestfile', 0);
+
+        $deleteprocessed = array();
+        $deleteprocessed[] = $mform->createElement('radio', 'deleteprocessed', '', get_string('no', 'local_lb_filetransfer'), 0);
+        $deleteprocessed[] = $mform->createElement('radio', 'deleteprocessed', '', get_string('yes','local_lb_filetransfer'), 1);
+        $mform->addGroup($deleteprocessed, 'deleteprocessed', get_string('delete_processed', 'local_lb_filetransfer'), array(' '), false);
+        $mform->setDefault('deleteprocessed', 0);
+
+        $moveremotefile = array();
+        $moveremotefile[] = $mform->createElement('radio', 'moveremotefile', '', get_string('no', 'local_lb_filetransfer'), 0);
+        $moveremotefile[] = $mform->createElement('radio', 'moveremotefile', '', get_string('yes','local_lb_filetransfer'), 1);
+        $mform->addGroup($moveremotefile, 'moveremotefile', get_string('move_remotefile', 'local_lb_filetransfer'), array(' '), false);
+        $mform->setDefault('moveremotefile', 0);
+
+        $mform->addElement('text', 'moveremotefiledirectory', get_string('move_remotefile_directory','local_lb_filetransfer'));
+        $mform->addRule('moveremotefiledirectory',get_string('maximum_character_255', 'local_lb_filetransfer'), 'maxlength', 255, 'client');
+
+        $movefailedfiles = array();
+        $movefailedfiles[] = $mform->createElement('radio', 'movefailedfiles', '', get_string('no', 'local_lb_filetransfer'), 0);
+        $movefailedfiles[] = $mform->createElement('radio', 'movefailedfiles', '', get_string('yes','local_lb_filetransfer'), 1);
+        $mform->addGroup($movefailedfiles, 'movefailedfiles', get_string('move_failed_files', 'local_lb_filetransfer'), array(' '), false);
+        $mform->setDefault('movefailedfiles', 0);
+
+        $mform->addElement('text', 'movefailedfilesdirectory', get_string('move_failed_files_directory','local_lb_filetransfer'));
+        $mform->addRule('movefailedfilesdirectory',get_string('maximum_character_255', 'local_lb_filetransfer'), 'maxlength', 255, 'client');
+
         $archivefile = array();
         $archivefile[] = $mform->createElement('radio', 'archivefile', '', get_string('no', 'local_lb_filetransfer'), 0);
         $archivefile[] = $mform->createElement('radio', 'archivefile', '', get_string('yes','local_lb_filetransfer'), 1);

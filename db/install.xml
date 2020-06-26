@@ -31,8 +31,14 @@
                 <FIELD NAME="connectionid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="pathtofile" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="filename" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" />
-                <FIELD NAME="archivefile" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" DEFAULT="0"/>
-                <FIELD NAME="archiveperiod" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" DEFAULT="0"/>
+                <FIELD NAME="getlatestfile" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" DEFAULT="1"/>
+                <FIELD NAME="deleteprocessed" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" DEFAULT="1"/>
+                <FIELD NAME="moveremotefile" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" DEFAULT="1"/>
+                <FIELD NAME="moveremotefiledirectory" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" />
+                <FIELD NAME="movefailedfiles" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" DEFAULT="1"/>
+                <FIELD NAME="movefailedfilesdirectory" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" />
+                <FIELD NAME="archivefile" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" DEFAULT="0"/>
+                <FIELD NAME="archiveperiod" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" DEFAULT="0"/>
                 <FIELD NAME="uutype" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" DEFAULT="0"/>
                 <FIELD NAME="uupasswordnew" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" DEFAULT="0"/>
                 <FIELD NAME="uuupdatetype" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" DEFAULT="0"/>

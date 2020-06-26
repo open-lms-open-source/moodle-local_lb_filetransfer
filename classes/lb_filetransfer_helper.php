@@ -28,6 +28,12 @@ class lb_filetransfer_helper {
     public $privatekey = null;
     public $pathtofile = null;
     public $filename = null;
+    public $getlatestfile = 0;
+    public $deleteprocessed = 0;
+    public $moveremotefile = 0;
+    public $moveremotefiledirectory = null;
+    public $movefailedfiles = 0;
+    public $movefailedfilesdirectory = null;
     public $archivefile = 0;
     public $archiveperiod = 0;
     public $uutype = 0;
@@ -78,6 +84,12 @@ class lb_filetransfer_helper {
         if (!empty($directory)) {
             $this->pathtofile = $directory->pathtofile;
             $this->filename = $directory->filename;
+            $this->getlatestfile = $directory->getlatestfile;
+            $this->deleteprocessed = $directory->deleteprocessed;
+            $this->moveremotefile = $directory->moveremotefile;
+            $this->moveremotefiledirectory = $directory->moveremotefiledirectory;
+            $this->movefailedfiles = $directory->movefailedfiles;
+            $this->movefailedfilesdirectory = $directory->movefailedfilesdirectory;
             $this->archivefile = $directory->archivefile;
             $this->archiveperiod = $directory->archiveperiod;
             $this->uutype = $directory->uutype;
@@ -112,8 +124,9 @@ class lb_filetransfer_helper {
         global $DB;
         $directory = $DB->get_record('local_lb_filetr_uploads',
             array('id' => $objectid));
-        $this->load_connections((int)$directory->connectionid);
         $this->construct_directory($directory);
+        $this->load_connections((int)$directory->connectionid);
+
     }
 
     /**

@@ -135,29 +135,43 @@ class lb_filetransfer_userupload {
         $formdata = new stdClass();
         $_POST['iid'] = $iid;
         $_POST['previewrows'] = '10';
-        //$_POST['uutype'] = UU_USER_ADD_UPDATE;
         $_POST['uutype'] = (int)$connection->uutype;
-        //$_POST['uupasswordnew'] = '1';
-        $_POST['uupasswordnew'] = (int)$connection->uupasswordnew;
-        //$_POST['uuupdatetype'] = UU_UPDATE_ALLOVERRIDE;
+        $_POST['uupasswordnew'] = $connection->uupasswordnew;
         $_POST['uuupdatetype'] = (int)$connection->uuupdatetype;
-        //$_POST['uupasswordold'] = '0';
-        $_POST['uupasswordold'] = (int)$connection->uupasswordold;
-        //$_POST['uuforcepasswordchange'] = UU_PWRESET_NONE;
+        $_POST['uupasswordold'] = $connection->uupasswordold;
         $_POST['uuforcepasswordchange'] = (int)$connection->uupasswordold;
-        //$_POST['allowrenames'] = '0';
-        $_POST['allowrenames'] = (int)$connection->allowrename;
-        //$_POST['uuallowdeletes'] = '0';
-        $_POST['uuallowdeletes'] = (int)$connection->allowdeletes;
-        //$_POST['uuallowsuspends'] = '1';
-        $_POST['uuallowsuspends'] = (int)$connection->allowsuspend;
-        //$_POST['uunoemailduplicates'] = '1';
-        $_POST['uunoemailduplicates'] = (int)$connection->noemailduplicate;
-        //$_POST['uustandardusernames'] = '1';
-        $_POST['uustandardusernames'] = (int)$connection->standardusername;
+        $_POST['allowrenames'] = $connection->allowrename;
+        $_POST['uuallowdeletes'] = $connection->allowdeletes;
+        $_POST['uuallowsuspends'] = $connection->allowsuspend;
+        $_POST['uunoemailduplicates'] = $connection->noemailduplicate;
+        $_POST['uustandardusernames'] = $connection->standardusername;
         $_POST['uubulk'] = UU_BULK_ALL;
-        //$_POST['uuallowrenames'] = '0';
-        $_POST['uuallowrenames'] = (int)$connection->allowrename;
+        $_POST['uuallowrenames'] = '0';
+        $_POST['_qf__admin_uploaduser_form2'] = '1';
+        $_POST['submitbutton'] = 'Upload users';
+        $_POST['sesskey'] = sesskey();
+
+        //default values from moodle which will always work
+        /*
+        $_POST['iid'] = $iid;
+        $_POST['previewrows'] = '10';
+        $_POST['uutype'] = UU_USER_ADD_UPDATE;
+        $_POST['uupasswordnew'] = '1';
+        $_POST['uuupdatetype'] = UU_UPDATE_ALLOVERRIDE;
+        $_POST['uupasswordold'] = '0';
+        $_POST['uuforcepasswordchange'] = UU_PWRESET_NONE;
+        $_POST['allowrenames'] = '0';
+        $_POST['uuallowdeletes'] = '0';
+        $_POST['uuallowsuspends'] = '1';
+        $_POST['uunoemailduplicates'] = '1';
+        $_POST['uustandardusernames'] = '1';
+        $_POST['uubulk'] = UU_BULK_ALL;
+        $_POST['uuallowrenames'] = '0';
+        $_POST['_qf__admin_uploaduser_form2'] = '1';
+        $_POST['submitbutton'] = 'Upload users';
+        $_POST['sesskey'] = sesskey();
+        */
+
 
         /* //cohort select plugin doesn't accept csv upload. When that plugin is changed, this feature can be used.
         $cohortSelect = cohort_select();
@@ -165,9 +179,37 @@ class lb_filetransfer_userupload {
             $_POST[$cohortSelect] = '_qf__force_multiselect_submission';
         }*/
 
-        $_POST['_qf__admin_uploaduser_form2'] = '1';
-        $_POST['submitbutton'] = 'Upload users';
-        $_POST['sesskey'] = sesskey();
+        /*
+        $choices = uu_allowed_roles(true);
+        if ($studentroles = get_archetype_roles('student')) {
+            foreach ($studentroles as $role) {
+                if (isset($choices[$role->id])) {
+                    $_POST['uulegacy1'] = $role->id;
+                    break;
+                }
+            }
+            unset($studentroles);
+        }
+        if ($editteacherroles = get_archetype_roles('editingteacher')) {
+            foreach ($editteacherroles as $role) {
+                if (isset($choices[$role->id])) {
+                    $_POST['uulegacy2'] = $role->id;
+                    break;
+                }
+            }
+            unset($editteacherroles);
+        }
+        if ($teacherroles = get_archetype_roles('teacher')) {
+            foreach ($teacherroles as $role) {
+                if (isset($choices[$role->id])) {
+                    $_POST['uulegacy3'] = $role->id;
+                    break;
+                }
+            }
+            unset($teacherroles);
+        }
+        */
+
         $templateuser = $USER;
 
         mtrace('Setting up the default profile fields.');
@@ -188,7 +230,7 @@ class lb_filetransfer_userupload {
         $_POST['phone1'] = '';
         $_POST['phone2'] = '';
         $_POST['address'] = '';
-        $_POST['uutype'] = (int)$connection->uutype;
+        $_POST['uutype'] = $connection->uutype;
         $_POST['submitbutton'] = 'submit';
 
         mtrace('Getting the moodle upload user codes.');
@@ -203,11 +245,9 @@ class lb_filetransfer_userupload {
         mtrace('Executing the codes.');
         try {
             eval($indexfile);
-            mtrace('Code executed.');
         }
         catch (Exception $e) {
             $output = ob_get_clean();
-            mtrace('Code execution error.');
             return false;
         }
 
@@ -297,39 +337,68 @@ class lb_filetransfer_userupload {
                 $sftp->chdir($remotedir);
                 //Checking if the file exist or not.
                 if (file_exists($fileToUpload)) {
-                    $today = time();  // Make the date stamp
-                    $today = date("Y-m-d-h-m-s",$today);
-                    $newName = $fileToUpload.'_renamed_'.$today;
-                    //if existing file found, renamed
-                    rename( $fileToUpload, $newName);
+                    fulldelete($fileToUpload);
                 }
 
-                //Transferred the file from remote directory.
-                $sftp->get($remotedir.$filename, $fileToUpload);
+                //Transfer the file from remote directory.
+                if ((int)$connection->getlatestfile == 0) {
+                    $remotefile = $remotedir.$filename;
+                } else {
+                    $remote_files = $sftp->rawlist();
+                    $compare_size = sizeof($remote_files);
+                    foreach ($remote_files as $key => $remote_file) {
+                        $time = $remote_file["mtime"];
+                        $counter = 0;
+                        foreach ($remote_files as $keys => $file) {
+                            if ($time >= $file["mtime"]) {
+                                $counter++;
+                            }
+                        }
+                        if ($counter == $compare_size) {
+                            $selected_file = $remote_file;
+                        }
+                    }
+                    $remotefile = $remotedir.$selected_file["filename"];
+                }
+                $sftp->get($remotefile, $fileToUpload);
+
 
                 //Changed permission of the file to 0777.
                 chmod($fileToUpload,0777);
 
                 //starting upload
                 $userupload_status = self::user_upload($fileToUpload, $connection);
+
+                //file archive
+                self::archive_file((int)$connection->archivefile, (int)$connection->archiveperiod, $localdir, $filename, $tempdir);
+                $a = new stdClass();
+                $a->id = $userupload->id;
+                $log_data[] = get_string('filetransfertask_userfilearchive', 'local_lb_filetransfer', $a);
+                self::eventTrigger(get_string('filetransfertask_userfilearchive', 'local_lb_filetransfer', $a));
+
                 if ($userupload_status) {
+                    $today = time();  // Make the date stamp
+                    $today = date("Y-m-d-h-m-s",$today);
+                    $processed_filename = 'Processed_'.$today.'_'.$connection->filename;
+                    $sftp->put($connection->moveremotefiledirectory.$processed_filename, $fileToUpload);
+                    $sftp->delete($remotefile);
                     $a = new stdClass();
                     $a->id = $userupload->id;
                     self::eventTrigger(get_string('filetransfertask_userupload', 'local_lb_filetransfer', $a));
                     mtrace("File transfer process completed.");
                 }
                 else {
+                    $today = time();  // Make the date stamp
+                    $today = date("Y-m-d-h-m-s",$today);
+                    $failed_filename = 'Failed_'.$today.'_'.$connection->filename;
+                    $sftp->put($connection->movefailedfilesdirectory.$failed_filename, $fileToUpload);
+                    $sftp->delete($remotefile);
                     $a = new stdClass();
                     $a->id = $userupload->id;
                     self::eventTrigger(get_string('filetransfertask_userupload_error', 'local_lb_filetransfer', $a));
                     mtrace("File transfer process not completed.");
                 }
-                //file archive
-                self::archive_file((int)$connection->archivefile, (int)$connection->archiveperiod, $localdir, $filename, $tempdir);
-                $a->id = $outgoingreport->id;
-                $log_data[] = get_string('filetransfertask_userfilearchive', 'local_lb_filetransfer', $a);
-                self::eventTrigger(get_string('filetransfertask_userfilearchive', 'local_lb_filetransfer', $a));
-
+                $sftp->disconnect();
             } else {
                 $a = new stdClass();
                 $a->id = $userupload->id;

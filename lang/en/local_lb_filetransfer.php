@@ -90,7 +90,7 @@ $string['pathtofile'] = 'Path to file';
 $string['filename'] = 'File name';
 $string['twoweeks'] = '2 Weeks';
 $string['fourweeks'] = '4 Weeks';
-$string['archivefile'] = 'Archive file';
+$string['archivefile'] = 'Archive file in moodledata';
 $string['archiveperiod'] = 'Archive period';
 $string['connectionid'] = 'Select connection';
 $string['uutype'] = 'Upload type';
@@ -116,6 +116,12 @@ $string['noemailduplicate'] = 'No duplicate email accounts';
 $string['standardusername'] = 'Standardise usernames';
 $string['yes'] = 'Yes';
 $string['no'] = 'No';
+$string['delete_processed'] = 'Delete remote file after processing';
+$string['move_remotefile'] = 'Move remote file after processing';
+$string['move_remotefile_directory'] = 'Path to after process directory (in remote location)';
+$string['move_failed_files'] = 'Move unsuccessful file to a different directory';
+$string['move_failed_files_directory'] = 'Path to unsuccessful files';
+$string['getlatestfile'] = 'Get the last modified file from remote directory';
 
 //useruploads page
 $string['delete_userupload'] = 'Delete user upload instance';
@@ -132,12 +138,12 @@ $string['userupload_save_error'] = 'Error saving user upload information.';
 //outgoing report form
 $string['email'] = 'Email addresses (comma separated, no space)';
 $string['configurablereportid'] = 'Select report';
-$string['emailpreference'] = 'Email preference';
-$string['emailpreference_report'] = 'Report';
-$string['emailpreference_log'] = 'Log';
+$string['emailpreference'] = 'Email preference (send email with)';
+$string['emailpreference_report'] = 'Report file';
+$string['emailpreference_log'] = 'Log information';
 $string['emailpreference_both'] = 'Both report & log';
-$string['outgoingreportpreference'] = 'Report preference';
-$string['outgoingreportpreference_remote'] = 'Remote Directory';
+$string['outgoingreportpreference'] = 'Report preference (send the file to)';
+$string['outgoingreportpreference_remote'] = 'Remote directory';
 $string['outgoingreportpreference_email'] = 'Email';
 $string['outgoingreportpreference_both'] = 'Both remote directory & email';
 

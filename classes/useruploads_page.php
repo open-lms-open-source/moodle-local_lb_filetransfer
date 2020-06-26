@@ -19,6 +19,12 @@ class useruploads_page {
     public $connectionid = 0;
     public $pathtofile = null;
     public $filename = null;
+    public $getlatestfile = 0;
+    public $deleteprocessed = 0;
+    public $moveremotefile = 0;
+    public $moveremotefiledirectory = null;
+    public $movefailedfiles = 0;
+    public $movefailedfilesdirectory = null;
     public $archivefile = 0;
     public $archiveperiod = 0;
     public $active = 0;
@@ -57,6 +63,12 @@ class useruploads_page {
             $this->connectionid = $useruploads->connectionid;
             $this->pathtofile = $useruploads->pathtofile;
             $this->filename = $useruploads->filename;
+            $this->getlatestfile = $useruploads->getlatestfile;
+            $this->deleteprocessed = $useruploads->deleteprocessed;
+            $this->moveremotefile = $useruploads->moveremotefile;
+            $this->moveremotefiledirectory = $useruploads->moveremotefiledirectory;
+            $this->movefailedfiles = $useruploads->movefailedfiles;
+            $this->movefailedfilesdirectory = $useruploads->movefailedfilesdirectory;
             $this->archivefile = $useruploads->archivefile;
             $this->archiveperiod = $useruploads->archiveperiod;
             $this->uutype = $useruploads->uutype;

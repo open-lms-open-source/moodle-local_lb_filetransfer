@@ -37,7 +37,7 @@ function xmldb_local_lb_filetransfer_upgrade($oldversion) {
     global $DB;
 
     $dbman = $DB->get_manager();
-    if ($oldversion < 20200062500) {
+    if ($oldversion < 20200062601) {
         $table = new xmldb_table('local_lb_filetr_connections');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
         $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, null, null);
@@ -66,8 +66,14 @@ function xmldb_local_lb_filetransfer_upgrade($oldversion) {
         $table->add_field('connectionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null);
         $table->add_field('pathtofile', XMLDB_TYPE_CHAR, '255', null, null, null);
         $table->add_field('filename', XMLDB_TYPE_CHAR, '255', null, null, null);
-        $table->add_field('archivefile', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 0);
-        $table->add_field('archiveperiod', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
+        $table->add_field('getlatestfile', XMLDB_TYPE_INTEGER, '1', null, null, null, 0);
+        $table->add_field('deleteprocessed', XMLDB_TYPE_INTEGER, '1', null, null, null, 0);
+        $table->add_field('moveremotefile', XMLDB_TYPE_INTEGER, '1', null, null, null, 0);
+        $table->add_field('moveremotefiledirectory', XMLDB_TYPE_CHAR, '255', null, null, null);
+        $table->add_field('movefailedfiles', XMLDB_TYPE_INTEGER, '1', null, null, null, 0);
+        $table->add_field('movefailedfilesdirectory', XMLDB_TYPE_CHAR, '255', null, null, null);
+        $table->add_field('archivefile', XMLDB_TYPE_INTEGER, '1', null, null, null, 0);
+        $table->add_field('archiveperiod', XMLDB_TYPE_INTEGER, '10', null, null, null, 0);
         $table->add_field('uutype', XMLDB_TYPE_INTEGER, '1', null, null, null, 0);
         $table->add_field('uupasswordnew', XMLDB_TYPE_INTEGER, '1', null, null, null, 0);
         $table->add_field('uuupdatetype', XMLDB_TYPE_INTEGER, '1', null, null, null, 0);
@@ -97,8 +103,8 @@ function xmldb_local_lb_filetransfer_upgrade($oldversion) {
         $table->add_field('configurablereportid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null);
         $table->add_field('pathtofile', XMLDB_TYPE_CHAR, '255', null, null, null);
         $table->add_field('filename', XMLDB_TYPE_CHAR, '255', null, null, null);
-        $table->add_field('archivefile', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 0);
-        $table->add_field('archiveperiod', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
+        $table->add_field('archivefile', XMLDB_TYPE_INTEGER, '1', null, null, null, 0);
+        $table->add_field('archiveperiod', XMLDB_TYPE_INTEGER, '10', null, null, null, 0);
         $table->add_field('emailpreference', XMLDB_TYPE_INTEGER, '1', null, null, null, 1);
         $table->add_field('email', XMLDB_TYPE_CHAR, '1024', null, null, null);
         $table->add_field('active', XMLDB_TYPE_INTEGER, '1', null, null, null, 1);
