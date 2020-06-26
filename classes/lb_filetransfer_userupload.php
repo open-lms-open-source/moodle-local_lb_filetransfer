@@ -377,26 +377,34 @@ class lb_filetransfer_userupload {
                 self::eventTrigger(get_string('filetransfertask_userfilearchive', 'local_lb_filetransfer', $a));
 
                 if ($userupload_status) {
-                    $today = time();  // Make the date stamp
-                    $today = date("Y-m-d-h-m-s",$today);
-                    $processed_filename = 'Processed_'.$today.'_'.$connection->filename;
-                    $sftp->put($connection->moveremotefiledirectory.$processed_filename, $fileToUpload);
-                    $sftp->delete($remotefile);
+                    //move remote file
+                    if ((int)$connection->moveremotefile == 1) {
+                        $today = time();  // Make the date stamp
+                        $today = date("Y-m-d-h-m-s",$today);
+                        $processed_filename = 'Processed_'.$today.'_'.$connection->filename;
+                        $sftp->put($connection->moveremotefiledirectory.$processed_filename, $fileToUpload);
+                    }
                     $a = new stdClass();
                     $a->id = $userupload->id;
                     self::eventTrigger(get_string('filetransfertask_userupload', 'local_lb_filetransfer', $a));
                     mtrace("File transfer process completed.");
                 }
                 else {
-                    $today = time();  // Make the date stamp
-                    $today = date("Y-m-d-h-m-s",$today);
-                    $failed_filename = 'Failed_'.$today.'_'.$connection->filename;
-                    $sftp->put($connection->movefailedfilesdirectory.$failed_filename, $fileToUpload);
-                    $sftp->delete($remotefile);
+                    //move failed remote file
+                    if ((int)$connection->movefailedfiles == 1) {
+                        $today = time();  // Make the date stamp
+                        $today = date("Y-m-d-h-m-s",$today);
+                        $failed_filename = 'Failed_'.$today.'_'.$connection->filename;
+                        $sftp->put($connection->movefailedfilesdirectory.$failed_filename, $fileToUpload);
+                    }
                     $a = new stdClass();
                     $a->id = $userupload->id;
                     self::eventTrigger(get_string('filetransfertask_userupload_error', 'local_lb_filetransfer', $a));
                     mtrace("File transfer process not completed.");
+                }
+                //delete remote file
+                if ((int)$connection->deleteprocessed == 1) {
+                    $sftp->delete($remotefile);
                 }
                 $sftp->disconnect();
             } else {
