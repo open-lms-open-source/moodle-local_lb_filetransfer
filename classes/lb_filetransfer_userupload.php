@@ -366,8 +366,49 @@ class lb_filetransfer_userupload {
                 //Changed permission of the file to 0777.
                 chmod($fileToUpload,0777);
 
-                //starting upload
-                $userupload_status = self::user_upload($fileToUpload, $connection);
+                //csv splitter
+                $count = count(file($fileToUpload));
+                if ($count < 700) {
+                    //starting upload if file size is ok
+                    $userupload_status = self::user_upload($fileToUpload, $connection);
+                } else {
+                    //starting splitting csv for bigger files
+                    $files = array();
+                    $userupload_status = true;
+                    $in = fopen($fileToUpload, 'r');
+                    $splitSize = 600;
+                    $rowCount = 0;
+                    $fileCount = 1;
+                    $header = $data = fgetcsv($in);
+                    while (!feof($in)) {
+                        if (($rowCount % $splitSize) == 0) {
+                            if ($rowCount > 0) {
+                                fclose($out);
+                            }
+                            $out_file = substr($fileToUpload, 0, -4) ."_". $fileCount++ . '.csv';
+                            $out = fopen($out_file, 'w');
+                            $files[] = $out_file;
+                            if($fileCount >1) {
+                                fputcsv($out,$header);
+                            }
+                        }
+                        $data = fgetcsv($in);
+
+                        if ($data)
+                            fputcsv($out, $data);
+                        $rowCount++;
+                    }
+                    fclose($out);
+
+                    //start upload
+                    foreach ($files as $file) {
+                        $userupload_file = self::user_upload($file, $connection);
+                        fulldelete($file);
+                        if (!$userupload_file) {
+                            $userupload_status = false;
+                        }
+                    }
+                }
 
                 //file archive
                 self::archive_file((int)$connection->archivefile, (int)$connection->archiveperiod, $localdir, $filename, $tempdir);
