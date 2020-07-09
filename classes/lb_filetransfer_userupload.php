@@ -117,8 +117,7 @@ class lb_filetransfer_userupload {
         global $CFG, $USER, $DB;
         $response = array(
             'result' => false,
-            'timestart' => null,
-            'timeend' => null
+            'output' => null
         );
         $admin = get_admin();
         $USER = $admin;
@@ -245,7 +244,7 @@ class lb_filetransfer_userupload {
         $_POST['submitbutton'] = 'submit';
 
         mtrace('Getting the moodle upload user codes.');
-        $response['timestart'] = time();
+        //$response['timestart'] = time();
         ob_start();
         chdir($CFG->dirroot . '/admin/tool/uploaduser');
         $indexfile = file_get_contents($CFG->dirroot . '/admin/tool/uploaduser/index.php');
@@ -258,7 +257,6 @@ class lb_filetransfer_userupload {
 
         try {
             eval($indexfile);
-            $response['timeend'] = time();
             $response['result'] = true;
             mtrace('Users upload successfull.');
         }
@@ -271,6 +269,15 @@ class lb_filetransfer_userupload {
 
         mtrace('Codes executed, preventing any output from echo statements.');
         $output = ob_get_clean();
+        $response['output'] = $output;
+
+/*        $output = "<?xml version='1.0' encoding='UTF-8'?>" . ob_get_clean();*/
+//        var_dump($output);
+//        $output = str_replace("&nbsp;","", $output);
+//        $output = preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $output);
+//        $xml = simplexml_load_string($output);
+        //var_dump($xml->tr[0]->th);
+
 
         return $response;
     }
@@ -323,19 +330,21 @@ class lb_filetransfer_userupload {
     public function create_log_data($userupload_file) {
         global $DB;
         var_dump($userupload_file);
+        $upload_log = array();
         //check if logstore is enabled
         $enabledlogstores = explode(',', get_config('tool_log', 'enabled_stores'));
         if (in_array('logstore_standard', $enabledlogstores)) {
-            $log_datas = $DB->get_records_sql("SELECT *
-                                              FROM {logstore_standard_log}
-                                              WHERE origin = 'cli'
-                                              AND component = 'core'
-                                              AND timecreated >= :timestart
-                                              AND timecreated <= :timeend",
-                                              array('timestart' => $userupload_file["timestart"],
-                                                    'timeend' => $userupload_file["timeend"]));
-
+            $log_datas = $DB->get_records_sql("SELECT id, crud, relateduserid
+                                  FROM {logstore_standard_log}
+                                  WHERE origin = :cli
+                                  AND component = :core
+                                  AND timecreated >= :timestart
+                                  AND timecreated <= :timeend",
+                array('cli' => 'cli', 'core' => 'core', 'timestart' => $userupload_file["timestart"],
+                    'timeend' => $userupload_file["timeend"]));
             var_dump($log_datas);
+//            foreach ($log_datas as $log_data) {
+//            }
         }
         return true;
     }
@@ -352,7 +361,7 @@ class lb_filetransfer_userupload {
                                                                WHERE active = :active',
                                                                array('active' => 1));
         foreach ($get_userupload_instances as $userupload) {
-            $log_data = array();
+            //$log_data = array();
             $connection = new lb_filetransfer_helper((int)$userupload->id);
             if($connection->test_connection()) {
                 //add event
@@ -410,15 +419,19 @@ class lb_filetransfer_userupload {
                 chmod($fileToUpload,0777);
 
                 //csv splitter
+                $today = time();  // Make the date stamp
+                $today = date("Y-m-d-h-m-s",$today);
+                $output = "Processing time: " .$today."\n";
                 $userupload_status = true;
                 $count = count(file($fileToUpload));
                 if ($count < 700) {
                     //starting upload if file size is ok
                     $userupload_file = self::user_upload($fileToUpload, $connection);
+                    $output .= $userupload_file['output'];
                     if (!$userupload_file['result']) {
                         $userupload_status = false;
                     }
-                    $log_data[] = self::create_log_data($userupload_file);
+
                 } else {
                     //starting splitting csv for bigger files
                     $files = array();
@@ -450,6 +463,7 @@ class lb_filetransfer_userupload {
                     //start upload
                     foreach ($files as $file) {
                         $userupload_file = self::user_upload($file, $connection);
+                        $output .= $userupload_file['output'];
                         fulldelete($file);
                         if (!$userupload_file['result']) {
                             $userupload_status = false;
@@ -494,12 +508,35 @@ class lb_filetransfer_userupload {
                     $sftp->delete($remotefile);
                 }
                 $sftp->disconnect();
+                //send log report
+                if ((int)$connection->emaillog == 1) {
+                    //email log and file
+                    $emails = $connection->construct_email();
+                    if (!empty($emails)) {
+                        //email log
+                        foreach ($emails as $keys => $email) {
+                            //create user object for the email
+                            $user = new stdClass;
+                            $user->id = -1;
+                            $user->name = $email;
+                            $user->email = $email;
+                            $user->suspended = 0;
+                            $user->deleted = 0;
+                            $user->mailformat = 1;
+
+                            email_to_user($user, core_user::get_noreply_user(), get_string('userupload_log_report', 'local_lb_filetransfer'),
+                                '', $output, '', '',
+                                true, '', '', 79);
+                        }
+                    }
+                }
             } else {
                 $a = new stdClass();
                 $a->id = $userupload->id;
                 self::eventTrigger(get_string('filetransfertask_connection_error', 'local_lb_filetransfer', $a));
                 mtrace("Connection error");
             }
+            //$log_data[] = self::create_log_data($log_time);
         }
     }
 

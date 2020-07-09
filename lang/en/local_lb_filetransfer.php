@@ -165,3 +165,6 @@ $string['outgoingreport_save_error'] = 'Error saving outgoing report information
 $string['outgoingreport_email_subject'] = 'Learnbook Filetransfer Report';
 $string['outgoingreport_email_body'] = 'Hi, The report from Learnbook Filetransfer is ready for you. Please check the attached CSV.';
 $string['outgoingreport_logemail_subject'] = 'Learnbook Filetransfer Log';
+
+//userupload log email
+$string['userupload_log_report'] = 'Learnbook user upload report';
