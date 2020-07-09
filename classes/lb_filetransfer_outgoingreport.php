@@ -12,7 +12,6 @@ defined('MOODLE_INTERNAL') || die;
 set_include_path(get_include_path(). PATH_SEPARATOR . $CFG->dirroot.'/local/lb_filetransfer/lib/phpseclib');
 require_once($CFG->dirroot .'/local/lb_filetransfer/lib/phpseclib/Net/SFTP.php');
 require_once($CFG->dirroot .'/local/lb_filetransfer/lib/phpseclib/Crypt/RSA.php');
-require_once($CFG->dirroot."/blocks/configurable_reports/locallib.php");
 require($CFG->dirroot.'/local/lb_filetransfer/classes/lb_filetransfer_report_helper.php');
 
 
@@ -183,7 +182,8 @@ class lb_filetransfer_outgoingreport {
                                                               FROM {local_lb_filetr_reports}
                                                               WHERE active = :active',
                                                               array('active' => 1));
-
+        //added here otherwise creates issues if the plugin is not present
+        require_once($CFG->dirroot."/blocks/configurable_reports/locallib.php");
         foreach($get_outgoingreport_instances as $key => $outgoingreport) {
             $log_data = array();
             $connection = new lb_filetransfer_report_helper((int)$outgoingreport->id);

@@ -37,7 +37,7 @@ function xmldb_local_lb_filetransfer_upgrade($oldversion) {
     global $DB;
 
     $dbman = $DB->get_manager();
-    if ($oldversion < 20200062601) {
+    if ($oldversion < 20200070801) {
         $table = new xmldb_table('local_lb_filetr_connections');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
         $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, null, null);
@@ -83,6 +83,8 @@ function xmldb_local_lb_filetransfer_upgrade($oldversion) {
         $table->add_field('allowsuspend', XMLDB_TYPE_INTEGER, '1', null, null, null, 0);
         $table->add_field('noemailduplicate', XMLDB_TYPE_INTEGER, '1', null, null, null, 0);
         $table->add_field('standardusername', XMLDB_TYPE_INTEGER, '1', null, null, null, 0);
+        $table->add_field('emaillog', XMLDB_TYPE_INTEGER, '1', null, null, null, 0);
+        $table->add_field('email', XMLDB_TYPE_CHAR, '1024', null, null, null);
         $table->add_field('active', XMLDB_TYPE_INTEGER, '1', null, null, null, 1);
         $table ->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, null, null);
         $table ->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null);

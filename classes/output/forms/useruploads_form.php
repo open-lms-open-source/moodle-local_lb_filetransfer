@@ -151,6 +151,16 @@ class useruploads_form extends moodleform {
         $mform->addElement('select', 'standardusername', get_string('standardusername', 'local_lb_filetransfer'), $standardusername);
         $mform->setDefault('standardusername', 1);
 
+        $emaillog = array();
+        $emaillog[] = $mform->createElement('radio', 'emaillog', '', get_string('no', 'local_lb_filetransfer'), 0);
+        $emaillog[] = $mform->createElement('radio', 'emaillog', '', get_string('yes','local_lb_filetransfer'), 1);
+        $mform->addGroup($emaillog, 'emaillog', get_string('emaillog', 'local_lb_filetransfer'), array(' '), false);
+        $mform->setDefault('emaillog', 0);
+
+        $mform->addElement('text', 'email', get_string('email','local_lb_filetransfer'));
+        $mform->addRule('email',get_string('maximum_character_255', 'local_lb_filetransfer'), 'maxlength', 255, 'client');
+        $mform->setType('email', PARAM_TEXT);
+
         $mform->addElement('hidden', 'active');
         $mform->setType('active', PARAM_INT);
 

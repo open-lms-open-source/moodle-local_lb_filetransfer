@@ -111,10 +111,15 @@ class lb_filetransfer_userupload {
      * Gets the file and uploads users.
      * @param $fileToUpload
      * @param $connection
-     * @return bool
+     * @return array
      */
     public function user_upload ($fileToUpload, $connection) {
         global $CFG, $USER, $DB;
+        $response = array(
+            'result' => false,
+            'timestart' => null,
+            'timeend' => null
+        );
         $admin = get_admin();
         $USER = $admin;
         mtrace('Setting encoding and delimiter.');
@@ -127,10 +132,14 @@ class lb_filetransfer_userupload {
         $content = file_get_contents($filepath);
         if(!$content) {
             mtrace("No content was found at ".$filepath);
-            return true;
+            return $response;
         }
         $readcount = $cir->load_csv_content($content, $encoding, $delimiter_name);
         $csvloaderror = $cir->get_error();
+        if (!is_null($csvloaderror)) {
+            print_error('csvloaderror', '', $returnurl, $csvloaderror);
+        }
+
         mtrace('Posting form data to mform.');
         $formdata = new stdClass();
         $_POST['iid'] = $iid;
@@ -152,25 +161,26 @@ class lb_filetransfer_userupload {
         $_POST['sesskey'] = sesskey();
 
         //default values from moodle which will always work
-        /*
-        $_POST['iid'] = $iid;
-        $_POST['previewrows'] = '10';
-        $_POST['uutype'] = UU_USER_ADD_UPDATE;
-        $_POST['uupasswordnew'] = '1';
-        $_POST['uuupdatetype'] = UU_UPDATE_ALLOVERRIDE;
-        $_POST['uupasswordold'] = '0';
-        $_POST['uuforcepasswordchange'] = UU_PWRESET_NONE;
-        $_POST['allowrenames'] = '0';
-        $_POST['uuallowdeletes'] = '0';
-        $_POST['uuallowsuspends'] = '1';
-        $_POST['uunoemailduplicates'] = '1';
-        $_POST['uustandardusernames'] = '1';
-        $_POST['uubulk'] = UU_BULK_ALL;
-        $_POST['uuallowrenames'] = '0';
-        $_POST['_qf__admin_uploaduser_form2'] = '1';
-        $_POST['submitbutton'] = 'Upload users';
-        $_POST['sesskey'] = sesskey();
-        */
+
+//        $_POST['iid'] = $iid;
+//        $_POST['previewrows'] = '10';
+//
+//        $_POST['uutype'] = UU_USER_ADD_UPDATE;
+//        $_POST['uupasswordnew'] = '1';
+//        $_POST['uuupdatetype'] = UU_UPDATE_ALLOVERRIDE;
+//        $_POST['uupasswordold'] = '0';
+//        $_POST['uuforcepasswordchange'] = UU_PWRESET_NONE;
+//        $_POST['allowrenames'] = '0';
+//        $_POST['uuallowdeletes'] = '0';
+//        $_POST['uuallowsuspends'] = '1';
+//        $_POST['uunoemailduplicates'] = '1';
+//        $_POST['uustandardusernames'] = '1';
+//        $_POST['uubulk'] = UU_BULK_ALL;
+//        $_POST['uuallowrenames'] = '0';
+//        $_POST['profile_field_cohortmanager'] = '_qf__force_multiselect_submission';
+//        $_POST['_qf__admin_uploaduser_form2'] = '1';
+//        $_POST['submitbutton'] = 'Upload users';
+//        $_POST['sesskey'] = sesskey();
 
 
         /* //cohort select plugin doesn't accept csv upload. When that plugin is changed, this feature can be used.
@@ -218,10 +228,11 @@ class lb_filetransfer_userupload {
         $_POST['mailformat'] = 1;
         $_POST['maildigest'] = 0;
         $_POST['autosubscribe'] = 1;
+        $_POST['descriptionformat'] = 1;
         $_POST['city'] = '';
-        $_POST['country'] = $templateuser->country;
-        $_POST['timezone'] = $templateuser->timezone;
-        $_POST['lang'] = $templateuser->lang;
+        $_POST['country'] = '';
+        $_POST['timezone'] = '';
+        $_POST['lang'] = '';
         $_POST['description'] = '';
         $_POST['url'] = '';
         $_POST['idnumber'] = '';
@@ -230,10 +241,11 @@ class lb_filetransfer_userupload {
         $_POST['phone1'] = '';
         $_POST['phone2'] = '';
         $_POST['address'] = '';
-        $_POST['uutype'] = $connection->uutype;
+        $_POST['uutype'] = UU_USER_ADD_UPDATE;
         $_POST['submitbutton'] = 'submit';
 
         mtrace('Getting the moodle upload user codes.');
+        $response['timestart'] = time();
         ob_start();
         chdir($CFG->dirroot . '/admin/tool/uploaduser');
         $indexfile = file_get_contents($CFG->dirroot . '/admin/tool/uploaduser/index.php');
@@ -243,19 +255,24 @@ class lb_filetransfer_userupload {
         $indexfile = str_replace("die;", "return;", $indexfile);
 
         mtrace('Executing the codes.');
+
         try {
             eval($indexfile);
+            $response['timeend'] = time();
+            $response['result'] = true;
+            mtrace('Users upload successfull.');
         }
         catch (Exception $e) {
+            mtrace('Exception found.');
             $output = ob_get_clean();
-            return false;
+            $response['result'] = false;
+            return $response;
         }
 
         mtrace('Codes executed, preventing any output from echo statements.');
         $output = ob_get_clean();
 
-        mtrace('Users upload successfull.');
-        return true;
+        return $response;
     }
 
     /**
@@ -298,6 +315,32 @@ class lb_filetransfer_userupload {
     }
 
     /**
+     * Creates log data for user upload
+     * @param $userupload_file
+     * @return bool
+     * @throws dml_exception
+     */
+    public function create_log_data($userupload_file) {
+        global $DB;
+        var_dump($userupload_file);
+        //check if logstore is enabled
+        $enabledlogstores = explode(',', get_config('tool_log', 'enabled_stores'));
+        if (in_array('logstore_standard', $enabledlogstores)) {
+            $log_datas = $DB->get_records_sql("SELECT *
+                                              FROM {logstore_standard_log}
+                                              WHERE origin = 'cli'
+                                              AND component = 'core'
+                                              AND timecreated >= :timestart
+                                              AND timecreated <= :timeend",
+                                              array('timestart' => $userupload_file["timestart"],
+                                                    'timeend' => $userupload_file["timeend"]));
+
+            var_dump($log_datas);
+        }
+        return true;
+    }
+
+    /**
      * Gets the connections and userupload instance.
      * @return void
      * @throws dml_exception|coding_exception
@@ -309,6 +352,7 @@ class lb_filetransfer_userupload {
                                                                WHERE active = :active',
                                                                array('active' => 1));
         foreach ($get_userupload_instances as $userupload) {
+            $log_data = array();
             $connection = new lb_filetransfer_helper((int)$userupload->id);
             if($connection->test_connection()) {
                 //add event
@@ -362,19 +406,22 @@ class lb_filetransfer_userupload {
                 }
                 $sftp->get($remotefile, $fileToUpload);
 
-
                 //Changed permission of the file to 0777.
                 chmod($fileToUpload,0777);
 
                 //csv splitter
+                $userupload_status = true;
                 $count = count(file($fileToUpload));
                 if ($count < 700) {
                     //starting upload if file size is ok
-                    $userupload_status = self::user_upload($fileToUpload, $connection);
+                    $userupload_file = self::user_upload($fileToUpload, $connection);
+                    if (!$userupload_file['result']) {
+                        $userupload_status = false;
+                    }
+                    $log_data[] = self::create_log_data($userupload_file);
                 } else {
                     //starting splitting csv for bigger files
                     $files = array();
-                    $userupload_status = true;
                     $in = fopen($fileToUpload, 'r');
                     $splitSize = 600;
                     $rowCount = 0;
@@ -404,7 +451,7 @@ class lb_filetransfer_userupload {
                     foreach ($files as $file) {
                         $userupload_file = self::user_upload($file, $connection);
                         fulldelete($file);
-                        if (!$userupload_file) {
+                        if (!$userupload_file['result']) {
                             $userupload_status = false;
                         }
                     }
@@ -414,7 +461,6 @@ class lb_filetransfer_userupload {
                 self::archive_file((int)$connection->archivefile, (int)$connection->archiveperiod, $localdir, $filename, $tempdir);
                 $a = new stdClass();
                 $a->id = $userupload->id;
-                $log_data[] = get_string('filetransfertask_userfilearchive', 'local_lb_filetransfer', $a);
                 self::eventTrigger(get_string('filetransfertask_userfilearchive', 'local_lb_filetransfer', $a));
 
                 if ($userupload_status) {

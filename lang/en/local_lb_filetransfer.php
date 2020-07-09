@@ -123,6 +123,7 @@ $string['move_remotefile_directory'] = 'Path to after process directory (in remo
 $string['move_failed_files'] = 'Move unsuccessful file to a different directory';
 $string['move_failed_files_directory'] = 'Path to unsuccessful files';
 $string['getlatestfile'] = 'Get the last modified file from remote directory';
+$string['emaillog'] = 'Email log report';
 
 //useruploads page
 $string['delete_userupload'] = 'Delete user upload instance';

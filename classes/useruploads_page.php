@@ -38,6 +38,8 @@ class useruploads_page {
     public $allowsuspend = 0;
     public $noemailduplicate = 0;
     public $standardusername = 0;
+    public $emaillog = 0;
+    public $email = null;
 
     /**
      * useruploads_page constructor.
@@ -80,6 +82,8 @@ class useruploads_page {
             $this->allowsuspend = $useruploads->allowsuspend;
             $this->noemailduplicate = $useruploads->noemailduplicate;
             $this->standardusername = $useruploads->standardusername;
+            $this->emaillog = $useruploads->emaillog;
+            $this->email = $useruploads->email;
             $this->active = $useruploads->active;
             $this->usermodified = (int)$USER->id;
         }

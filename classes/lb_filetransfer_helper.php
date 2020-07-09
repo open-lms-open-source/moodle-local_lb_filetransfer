@@ -45,6 +45,8 @@ class lb_filetransfer_helper {
     public $allowsuspend = 0;
     public $noemailduplicate = 0;
     public $standardusername = 0;
+    public $emaillog = 0;
+    public $email = null;
 
     /**
      * lb_filetransfer_helper constructor.
@@ -101,6 +103,8 @@ class lb_filetransfer_helper {
             $this->allowsuspend = $directory->allowsuspend;
             $this->noemailduplicate = $directory->noemailduplicate;
             $this->standardusername = $directory->standardusername;
+            $this->emaillog = $directory->emaillog;
+            $this->email = $directory->email;
         }
     }
 
@@ -140,6 +144,39 @@ class lb_filetransfer_helper {
             'other' => $description
         ));
         $event->trigger();
+    }
+
+    /**
+     * validates email.
+     * @param $email
+     * @return bool
+     */
+    public function validate_emails($email)
+    {
+        if (!empty($email)) {
+            $domain = ltrim(stristr($email, '@'), '@') . '.';
+            $user = stristr($email, '@', TRUE);
+            if (!empty($user) && !empty($domain) && checkdnsrr($domain)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * constructs emails.
+     * @return array
+     */
+    public function construct_email() {
+        $emails = explode (",", $this->email);
+        foreach ($emails as $key => $email) {
+            $emails[$key] = trim($email);
+            //email validation
+            if (!self::validate_emails($email)) {
+                unset($emails[$key]);
+            }
+        }
+        return $emails;
     }
 
     /**
