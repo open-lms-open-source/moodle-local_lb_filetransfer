@@ -124,6 +124,10 @@ $string['move_failed_files'] = 'Move unsuccessful file to a different directory'
 $string['move_failed_files_directory'] = 'Path to unsuccessful files';
 $string['getlatestfile'] = 'Get the last modified file from remote directory';
 $string['emaillog'] = 'Email log report';
+$string['decryptfile'] = 'Decrypt incoming file';
+$string['decryptionkey'] = 'Decryption key';
+$string['decryptiontype'] = 'Decryption type';
+$string['decryptiontype_aes'] = 'AES_256_CBC';
 
 //useruploads page
 $string['delete_userupload'] = 'Delete user upload instance';

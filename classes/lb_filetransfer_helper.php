@@ -47,6 +47,9 @@ class lb_filetransfer_helper {
     public $standardusername = 0;
     public $emaillog = 0;
     public $email = null;
+    public $decryptfile = 0;
+    public $decryptiontype = 0;
+    public $decryptionkey = null;
 
     /**
      * lb_filetransfer_helper constructor.
@@ -105,6 +108,9 @@ class lb_filetransfer_helper {
             $this->standardusername = $directory->standardusername;
             $this->emaillog = $directory->emaillog;
             $this->email = $directory->email;
+            $this->decryptfile = $directory->decryptfile;
+            $this->decryptiontype = $directory->decryptiontype;
+            $this->decryptionkey = $directory->decryptionkey;
         }
     }
 

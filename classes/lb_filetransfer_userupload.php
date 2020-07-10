@@ -21,6 +21,7 @@ require_once($CFG->dirroot.'/cohort/lib.php');
 require_once($CFG->dirroot.'/admin/tool/uploaduser/locallib.php');
 require_once($CFG->dirroot.'/admin/tool/uploaduser/user_form.php');
 require($CFG->dirroot.'/local/lb_filetransfer/classes/lb_filetransfer_helper.php');
+require($CFG->dirroot.'/local/lb_filetransfer/classes/lb_filetransfer_encryption.php');
 
 /**
  * Class lb_filetransfer_userupload represents all the available userupload object.
@@ -258,26 +259,19 @@ class lb_filetransfer_userupload {
         try {
             eval($indexfile);
             $response['result'] = true;
+            $output = ob_get_clean();
+            $response['output'] = $output;
             mtrace('Users upload successfull.');
         }
         catch (Exception $e) {
             mtrace('Exception found.');
             $output = ob_get_clean();
+            $response['output'] = $output;
             $response['result'] = false;
             return $response;
         }
 
         mtrace('Codes executed, preventing any output from echo statements.');
-        $output = ob_get_clean();
-        $response['output'] = $output;
-
-/*        $output = "<?xml version='1.0' encoding='UTF-8'?>" . ob_get_clean();*/
-//        var_dump($output);
-//        $output = str_replace("&nbsp;","", $output);
-//        $output = preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $output);
-//        $xml = simplexml_load_string($output);
-        //var_dump($xml->tr[0]->th);
-
 
         return $response;
     }
@@ -321,33 +315,6 @@ class lb_filetransfer_userupload {
         }
     }
 
-    /**
-     * Creates log data for user upload
-     * @param $userupload_file
-     * @return bool
-     * @throws dml_exception
-     */
-    public function create_log_data($userupload_file) {
-        global $DB;
-        var_dump($userupload_file);
-        $upload_log = array();
-        //check if logstore is enabled
-        $enabledlogstores = explode(',', get_config('tool_log', 'enabled_stores'));
-        if (in_array('logstore_standard', $enabledlogstores)) {
-            $log_datas = $DB->get_records_sql("SELECT id, crud, relateduserid
-                                  FROM {logstore_standard_log}
-                                  WHERE origin = :cli
-                                  AND component = :core
-                                  AND timecreated >= :timestart
-                                  AND timecreated <= :timeend",
-                array('cli' => 'cli', 'core' => 'core', 'timestart' => $userupload_file["timestart"],
-                    'timeend' => $userupload_file["timeend"]));
-            var_dump($log_datas);
-//            foreach ($log_datas as $log_data) {
-//            }
-        }
-        return true;
-    }
 
     /**
      * Gets the connections and userupload instance.
@@ -414,6 +381,10 @@ class lb_filetransfer_userupload {
                     $remotefile = $remotedir.$selected_file["filename"];
                 }
                 $sftp->get($remotefile, $fileToUpload);
+
+                if ((int)$connection->decryptfile) {
+                    $decrypted_file = (new lb_filetransfer_encryption)->file_decrypt((int)$connection->decryptiontype, $connection->decryptionkey, file_get_contents($fileToUpload));
+                }
 
                 //Changed permission of the file to 0777.
                 chmod($fileToUpload,0777);

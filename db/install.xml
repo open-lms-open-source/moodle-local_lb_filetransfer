@@ -50,6 +50,9 @@
                 <FIELD NAME="standardusername" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" DEFAULT="0"/>
                 <FIELD NAME="emaillog" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" DEFAULT="0"/>
                 <FIELD NAME="email" TYPE="char" LENGTH="1024" NOTNULL="false" SEQUENCE="false" />
+                <FIELD NAME="decryptfile" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" DEFAULT="0"/>
+                <FIELD NAME="decryptiontype" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="decryptionkey" TYPE="char" LENGTH="1024" NOTNULL="false" SEQUENCE="false" />
                 <FIELD NAME="active" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" DEFAULT="1"/>
                 <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>

@@ -38,6 +38,9 @@ class useruploads_page {
     public $allowsuspend = 0;
     public $noemailduplicate = 0;
     public $standardusername = 0;
+    public $decryptfile = 0;
+    public $decryptiontype = 0;
+    public $decryptionkey = null;
     public $emaillog = 0;
     public $email = null;
 
@@ -84,6 +87,9 @@ class useruploads_page {
             $this->standardusername = $useruploads->standardusername;
             $this->emaillog = $useruploads->emaillog;
             $this->email = $useruploads->email;
+            $this->decryptfile = $useruploads->decryptfile;
+            $this->decryptiontype = $useruploads->decryptiontype;
+            $this->decryptionkey = $useruploads->decryptionkey;
             $this->active = $useruploads->active;
             $this->usermodified = (int)$USER->id;
         }

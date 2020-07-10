@@ -151,6 +151,21 @@ class useruploads_form extends moodleform {
         $mform->addElement('select', 'standardusername', get_string('standardusername', 'local_lb_filetransfer'), $standardusername);
         $mform->setDefault('standardusername', 1);
 
+        $decryptfile = array();
+        $decryptfile[] = $mform->createElement('radio', 'decryptfile', '', get_string('no', 'local_lb_filetransfer'), 0);
+        $decryptfile[] = $mform->createElement('radio', 'decryptfile', '', get_string('yes','local_lb_filetransfer'), 1);
+        $mform->addGroup($decryptfile, 'decryptfile', get_string('decryptfile', 'local_lb_filetransfer'), array(' '), false);
+        $mform->setDefault('decryptfile', 0);
+
+        $decryptiontype = array();
+        $decryptiontype[] = $mform->createElement('radio', 'decryptiontype', '', get_string('decryptiontype_aes','local_lb_filetransfer'), 1);
+        $mform->addGroup($decryptiontype, 'decryptiontypegrp', get_string('decryptiontype', 'local_lb_filetransfer'), array(' '), false);
+        $mform->setDefault('decryptiontype', 1);
+
+        $mform->addElement('textarea', 'decryptionkey', get_string('decryptionkey','local_lb_filetransfer'));
+        $mform->addRule('decryptionkey',get_string('maximum_character_1024', 'local_lb_filetransfer'), 'maxlength', 1024, 'client');
+        $mform->setType('decryptionkey', PARAM_TEXT);
+
         $emaillog = array();
         $emaillog[] = $mform->createElement('radio', 'emaillog', '', get_string('no', 'local_lb_filetransfer'), 0);
         $emaillog[] = $mform->createElement('radio', 'emaillog', '', get_string('yes','local_lb_filetransfer'), 1);

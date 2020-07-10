@@ -122,6 +122,25 @@ function xmldb_local_lb_filetransfer_upgrade($oldversion) {
             $dbman->create_table($table);
         }
     }
+    if ($oldversion < 20200071001) {
+        $table = new xmldb_table('local_lb_filetr_uploads');
+        $field = new xmldb_field('decryptfile', XMLDB_TYPE_INTEGER, '1', null, null, null, 0);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('decryptionkey', XMLDB_TYPE_CHAR, '1024', null, null, null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+    }
+    if ($oldversion < 20200071002) {
+        $table = new xmldb_table('local_lb_filetr_uploads');
+        $field = new xmldb_field('decryptiontype', XMLDB_TYPE_INTEGER, '10', null, null, null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+    }
 
     return true;
 }
