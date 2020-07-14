@@ -25,6 +25,10 @@ class outgoingreports_page {
     public $archiveperiod = 0;
     public $emailpreference = 0;
     public $email = null;
+    public $encryptfile = 0;
+    public $encryptiontype = 0;
+    public $encryptionkey = null;
+    public $privatekey = null;
     public $active = 0;
     public $usermodified = 0;
 
@@ -58,6 +62,10 @@ class outgoingreports_page {
             $this->archiveperiod = $outgoingreports->archiveperiod;
             $this->emailpreference = $outgoingreports->emailpreference;
             $this->email = $outgoingreports->email;
+            $this->encryptfile = $outgoingreports->encryptfile;
+            $this->encryptiontype = $outgoingreports->encryptiontype;
+            $this->encryptionkey = $outgoingreports->encryptionkey;
+            $this->privatekey = $outgoingreports->privatekey;
             $this->active = $outgoingreports->active;
             $this->usermodified = (int)$USER->id;
         }

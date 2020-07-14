@@ -21,7 +21,6 @@ require_once($CFG->dirroot.'/cohort/lib.php');
 require_once($CFG->dirroot.'/admin/tool/uploaduser/locallib.php');
 require_once($CFG->dirroot.'/admin/tool/uploaduser/user_form.php');
 require($CFG->dirroot.'/local/lb_filetransfer/classes/lb_filetransfer_helper.php');
-require($CFG->dirroot.'/local/lb_filetransfer/classes/lb_filetransfer_encryption.php');
 
 /**
  * Class lb_filetransfer_userupload represents all the available userupload object.
@@ -310,8 +309,24 @@ class lb_filetransfer_userupload {
             }
             mtrace("Deleted old files.");
         } else {
-            fulldelete($tempdir.$filename);
+            fulldelete($localdir.$filename);
             mtrace("Deleted temporary file.");
+        }
+    }
+
+    /**
+     * decrypt file data.
+     * @return string
+     */
+    public function file_decrypt ($encryptiontype, $encryptedfile, $privatekey) {
+        if ($encryptiontype == 1) {
+            $rsa = new Crypt_RSA();
+//            var_dump($encryptedfile);
+//            var_dump($privatekey);
+            $ciphertext = base64_decode($encryptedfile);
+            $rsa->loadKey($privatekey);
+            $output = $rsa->decrypt($ciphertext);
+            return $output;
         }
     }
 
@@ -383,7 +398,10 @@ class lb_filetransfer_userupload {
                 $sftp->get($remotefile, $fileToUpload);
 
                 if ((int)$connection->decryptfile) {
-                    $decrypted_file = (new lb_filetransfer_encryption)->file_decrypt((int)$connection->decryptiontype, $connection->decryptionkey, file_get_contents($fileToUpload));
+                    $decrypted_data = self::file_decrypt((int)$connection->decryptiontype, file_get_contents($fileToUpload), $connection->decryptionkey);
+                    $temp_filename = "file.csv";
+                    $fileToUpload = $localdir. $temp_filename;
+                    file_put_contents($fileToUpload, $decrypted_data);
                 }
 
                 //Changed permission of the file to 0777.
@@ -447,6 +465,7 @@ class lb_filetransfer_userupload {
                 $a = new stdClass();
                 $a->id = $userupload->id;
                 self::eventTrigger(get_string('filetransfertask_userfilearchive', 'local_lb_filetransfer', $a));
+                fulldelete($fileToUpload);
 
                 if ($userupload_status) {
                     //move remote file
@@ -501,6 +520,8 @@ class lb_filetransfer_userupload {
                         }
                     }
                 }
+                //delete temp file after full process
+                //fulldelete($fileToUpload);
             } else {
                 $a = new stdClass();
                 $a->id = $userupload->id;

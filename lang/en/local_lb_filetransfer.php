@@ -127,7 +127,7 @@ $string['emaillog'] = 'Email log report';
 $string['decryptfile'] = 'Decrypt incoming file';
 $string['decryptionkey'] = 'Decryption key';
 $string['decryptiontype'] = 'Decryption type';
-$string['decryptiontype_aes'] = 'AES_256_CBC';
+$string['decryptiontype_aes'] = 'RSA';
 
 //useruploads page
 $string['delete_userupload'] = 'Delete user upload instance';
@@ -152,6 +152,10 @@ $string['outgoingreportpreference'] = 'Report preference (send the file to)';
 $string['outgoingreportpreference_remote'] = 'Remote directory';
 $string['outgoingreportpreference_email'] = 'Email';
 $string['outgoingreportpreference_both'] = 'Both remote directory & email';
+$string['encryptfile'] = 'Encrypt outgoing file';
+$string['encryptionkey'] = 'Encryption key';
+$string['encryptiontype'] = 'Encryption type';
+$string['privatekey'] = 'Private key';
 
 //outgoing reports page
 $string['delete_outgoingreport'] = 'Delete outgoing report instance';

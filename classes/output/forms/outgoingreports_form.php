@@ -73,6 +73,25 @@ class outgoingreports_form extends moodleform {
         $mform->addGroup($archiveperiod, 'archiveperiodgr', get_string('archiveperiod', 'local_lb_filetransfer'), array(' '), false);
         $mform->setDefault('archiveperiod', 0);
 
+        $encryptfile = array();
+        $encryptfile[] = $mform->createElement('radio', 'encryptfile', '', get_string('no', 'local_lb_filetransfer'), 0);
+        $encryptfile[] = $mform->createElement('radio', 'encryptfile', '', get_string('yes','local_lb_filetransfer'), 1);
+        $mform->addGroup($encryptfile, 'encryptfilegrp', get_string('encryptfile', 'local_lb_filetransfer'), array(' '), false);
+        $mform->setDefault('encryptfile', 0);
+
+        $encryptiontype = array();
+        $encryptiontype[] = $mform->createElement('radio', 'encryptiontype', '', get_string('decryptiontype_aes','local_lb_filetransfer'), 1);
+        $mform->addGroup($encryptiontype, 'encryptiontypegrp', get_string('encryptiontype', 'local_lb_filetransfer'), array(' '), false);
+        $mform->setDefault('encryptiontype', 1);
+
+        $mform->addElement('textarea', 'encryptionkey', get_string('encryptionkey','local_lb_filetransfer'));
+        $mform->addRule('encryptionkey',get_string('maximum_character_1024', 'local_lb_filetransfer'), 'maxlength', 1024, 'client');
+        $mform->setType('encryptionkey', PARAM_TEXT);
+
+        $mform->addElement('textarea', 'privatekey', get_string('privatekey','local_lb_filetransfer'));
+        $mform->addRule('privatekey',get_string('maximum_character_1024', 'local_lb_filetransfer'), 'maxlength', 1024, 'client');
+        $mform->setType('privatekey', PARAM_TEXT);
+
         $emailpreference = array();
         $emailpreference[] = $mform->createElement('radio', 'emailpreference', '', get_string('emailpreference_report', 'local_lb_filetransfer'), 0);
         $emailpreference[] = $mform->createElement('radio', 'emailpreference', '', get_string('emailpreference_log','local_lb_filetransfer'), 1);

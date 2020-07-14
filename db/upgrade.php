@@ -141,6 +141,30 @@ function xmldb_local_lb_filetransfer_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
     }
+    if ($oldversion < 20200071400) {
+        $table = new xmldb_table('local_lb_filetr_reports');
+        $field = new xmldb_field('encryptfile', XMLDB_TYPE_INTEGER, '1', null, null, null, 0);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('encryptiontype', XMLDB_TYPE_INTEGER, '10', null, null, null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('encryptionkey', XMLDB_TYPE_CHAR, '1024', null, null, null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+    }
+    if ($oldversion < 20200071401) {
+        $table = new xmldb_table('local_lb_filetr_reports');
+        $field = new xmldb_field('privatekey', XMLDB_TYPE_CHAR, '1024', null, null, null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+    }
 
     return true;
 }

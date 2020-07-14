@@ -77,6 +77,10 @@
                 <FIELD NAME="archiveperiod" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" DEFAULT="0"/>
                 <FIELD NAME="emailpreference" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" DEFAULT="1"/>
                 <FIELD NAME="email" TYPE="char" LENGTH="1024" NOTNULL="false" SEQUENCE="false" />
+                <FIELD NAME="encryptfile" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" DEFAULT="0"/>
+                <FIELD NAME="encryptiontype" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="encryptionkey" TYPE="char" LENGTH="1024" NOTNULL="false" SEQUENCE="false" />
+                <FIELD NAME="privatekey" TYPE="char" LENGTH="1024" NOTNULL="false" SEQUENCE="false" />
                 <FIELD NAME="active" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" DEFAULT="1"/>
                 <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>

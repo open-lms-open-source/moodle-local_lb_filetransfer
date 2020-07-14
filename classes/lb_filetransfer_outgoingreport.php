@@ -14,7 +14,6 @@ require_once($CFG->dirroot .'/local/lb_filetransfer/lib/phpseclib/Net/SFTP.php')
 require_once($CFG->dirroot .'/local/lb_filetransfer/lib/phpseclib/Crypt/RSA.php');
 require($CFG->dirroot.'/local/lb_filetransfer/classes/lb_filetransfer_report_helper.php');
 
-
 /**
  * Class lb_filetransfer_outgoingreport represents all the available outgoing report object.
  */
@@ -171,6 +170,36 @@ class lb_filetransfer_outgoingreport {
     }
 
     /**
+     * test encrypted file data.
+     * @return string
+     */
+    public function file_decrypt ($encryptedfile, $privatekey) {
+        $rsa = new Crypt_RSA();
+        $ciphertext = base64_decode($encryptedfile);
+        $rsa->loadKey($privatekey);
+        var_dump('decrypted file');
+        $output = $rsa->decrypt($ciphertext);
+        var_dump($output);
+    }
+
+    /**
+     * encrypt file data.
+     * @return string
+     */
+    public function file_encrypt ($encryptiontype, $rawfile, $encryptionkey, $privatekey) {
+        if ($encryptiontype == 1) {
+            $rsa = new Crypt_RSA();
+            $rsa->loadKey($encryptionkey);
+            $output = $rsa->encrypt($rawfile);
+//            var_dump('encrypted file');
+//            var_dump(base64_encode($output));
+//            self::file_decrypt(base64_encode($output), $privatekey);
+            return base64_encode($output);
+        }
+    }
+
+
+    /**
      * send outgoing report to sftp.
      * @return string
      * @throws coding_exception
@@ -208,7 +237,8 @@ class lb_filetransfer_outgoingreport {
             $reportclassname = 'report_'.$report->type;
             $reportclass = new $reportclassname($report);
             $reportclass->create_report();
-            $export_file = self::export_report($reportclass->finalreport, $connection->filename, $tempdir);
+            $export_file_path = self::export_report($reportclass->finalreport, $connection->filename, $tempdir);
+            $export_file = file_get_contents($export_file_path);
             //if sftp connection is available
             if ((int)$connection->outgoingreportpreference == 0 || (int)$connection->outgoingreportpreference == 2) {
                 if ($connection->test_connection()) {
@@ -216,6 +246,19 @@ class lb_filetransfer_outgoingreport {
                     $port = (int)$connection->portnumber;
                     $username = $connection->username;
                     $remotedir = $connection->pathtofile;
+                    //encryption
+                    if ((int)$connection->encryptfile) {
+                        $encrypted_data = self::file_encrypt((int)$connection->encryptiontype,  $export_file, $connection->encryptionkey, $connection->encryptprivatekey);
+                        //put encrypted string in the file
+                        $raw_file = $export_file_path;
+                        $today = time();  // Make the date stamp
+                        $today = date("Y-m-d-h-m-s",$today);
+                        $encrypted_filename = "report_". $today. "_" . $outgoingreport->id . ".txt";
+                        $export_file_path = $localdir . $encrypted_filename;
+                        file_put_contents($export_file_path, $encrypted_data);
+                        $export_file = file_get_contents($export_file_path);
+                        $connection->filename = $encrypted_filename;
+                    }
                     $sftp = new Net_SFTP($host, $port);
                     if ((int)$connection->usepublickey == 0) {
                         $password = $connection->password;
@@ -272,6 +315,7 @@ class lb_filetransfer_outgoingreport {
             $a->id = $outgoingreport->id;
             $log_data[] = get_string('filetransfertask_filearchive', 'local_lb_filetransfer', $a);
             self::eventTrigger(get_string('filetransfertask_filearchive', 'local_lb_filetransfer', $a));
+            fulldelete($raw_file);
 
             //send log
             if ((int)$connection->emailpreference = 1 || (int)$connection->emailpreference == 2) {

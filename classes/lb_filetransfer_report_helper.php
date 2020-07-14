@@ -34,6 +34,10 @@ class lb_filetransfer_report_helper {
     public $archiveperiod = 0;
     public $emailpreference = 0;
     public $email = null;
+    public $encryptfile = 0;
+    public $encryptiontype = 0;
+    public $encryptionkey = null;
+    public $encryptprivatekey = null;
 
 
     /**
@@ -80,6 +84,10 @@ class lb_filetransfer_report_helper {
             $this->archiveperiod = $directory->archiveperiod;
             $this->emailpreference = $directory->emailpreference;
             $this->email = $directory->email;
+            $this->encryptfile = $directory->encryptfile;
+            $this->encryptiontype = $directory->encryptiontype;
+            $this->encryptionkey = $directory->encryptionkey;
+            $this->encryptprivatekey = $directory->privatekey;
         }
     }
 
