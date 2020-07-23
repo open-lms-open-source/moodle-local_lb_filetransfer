@@ -53,7 +53,7 @@ class outgoingreports_form extends moodleform {
         $mform->setDefault('configurablereportid', 0);
 
         $mform->addElement('text', 'pathtofile', get_string('pathtofile','local_lb_filetransfer'));
-        $mform->addRule('pathtofile', get_string('required'), 'required', null, 'client');
+//        $mform->addRule('pathtofile', get_string('required'), 'required', null, 'client');
         $mform->addRule('pathtofile',get_string('maximum_character_255', 'local_lb_filetransfer'), 'maxlength', 255, 'client');
         $mform->setType('pathtofile', PARAM_TEXT);
 
