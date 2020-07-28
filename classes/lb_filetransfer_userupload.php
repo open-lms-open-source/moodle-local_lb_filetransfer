@@ -154,7 +154,6 @@ class lb_filetransfer_userupload {
         $_POST['uunoemailduplicates'] = $connection->noemailduplicate;
         $_POST['uustandardusernames'] = $connection->standardusername;
         $_POST['uubulk'] = UU_BULK_ALL;
-        $_POST['uuallowrenames'] = '0';
         $_POST['_qf__admin_uploaduser_form2'] = '1';
         $_POST['submitbutton'] = 'Upload users';
         $_POST['sesskey'] = sesskey();
