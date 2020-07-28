@@ -493,7 +493,7 @@ class lb_filetransfer_userupload {
                 }
                 //delete remote file
                 if ((int)$connection->deleteprocessed == 1) {
-                    $sftp->delete($remotefile);
+                    $sftp->delete($remotefile, true);
                 }
                 $sftp->disconnect();
 
