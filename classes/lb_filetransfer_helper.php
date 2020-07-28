@@ -226,23 +226,23 @@ class lb_filetransfer_helper {
                 return false;
             }
         }
-        if (!empty($filename)) {
-            if ($sftp->file_exists($remotedir . $filename)) {
-                if (!$sftp->is_readable($remotedir . $filename)) {
-                    $a = new stdClass();
-                    $a->id = $this->connectionid;
-                    self::eventTrigger(get_string('filetransfertask_fileread_error', 'local_lb_filetransfer', $a));
-                    return false;
-                }
-            } else {
-                $a = new stdClass();
-                $a->id = $this->connectionid;
-                self::eventTrigger(get_string('filetransfertask_nofile_error', 'local_lb_filetransfer', $a));
-                return false;
-            }
-        } else {
-            return false;
-        }
+//        if (!empty($filename)) {
+//            if ($sftp->file_exists($remotedir . $filename)) {
+//                if (!$sftp->is_readable($remotedir . $filename)) {
+//                    $a = new stdClass();
+//                    $a->id = $this->connectionid;
+//                    self::eventTrigger(get_string('filetransfertask_fileread_error', 'local_lb_filetransfer', $a));
+//                    return false;
+//                }
+//            } else {
+//                $a = new stdClass();
+//                $a->id = $this->connectionid;
+//                self::eventTrigger(get_string('filetransfertask_nofile_error', 'local_lb_filetransfer', $a));
+//                return false;
+//            }
+//        } else {
+//            return false;
+//        }
         return true;
     }
 

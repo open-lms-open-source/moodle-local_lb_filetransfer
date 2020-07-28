@@ -240,7 +240,6 @@ class lb_filetransfer_userupload {
         $_POST['phone1'] = '';
         $_POST['phone2'] = '';
         $_POST['address'] = '';
-        $_POST['uutype'] = UU_USER_ADD_UPDATE;
         $_POST['submitbutton'] = 'submit';
 
         mtrace('Getting the moodle upload user codes.');
@@ -380,18 +379,24 @@ class lb_filetransfer_userupload {
                     $remotefile = $remotedir.$filename;
                 } else {
                     $remote_files = $sftp->rawlist();
+                    //remove . and ..
+                    foreach ($remote_files as $value => $values) {
+                        if ($value === '.' || $value === "..") {
+                            unset($remote_files[$value]);
+                        }
+                    }
                     $compare_size = sizeof($remote_files);
                     foreach ($remote_files as $key => $remote_file) {
-                        $time = $remote_file["mtime"];
-                        $counter = 0;
-                        foreach ($remote_files as $keys => $file) {
-                            if ($time >= $file["mtime"]) {
-                                $counter++;
+                            $time = $remote_file["mtime"];
+                            $counter = 0;
+                            foreach ($remote_files as $keys => $file) {
+                                if ($time >= $file["mtime"]) {
+                                    $counter++;
+                                }
                             }
-                        }
-                        if ($counter == $compare_size) {
-                            $selected_file = $remote_file;
-                        }
+                            if ($counter == $compare_size) {
+                                $selected_file = $remote_file;
+                            }
                     }
                     $remotefile = $remotedir.$selected_file["filename"];
                 }
@@ -460,20 +465,13 @@ class lb_filetransfer_userupload {
                     }
                 }
 
-                //file archive
-                self::archive_file((int)$connection->archivefile, (int)$connection->archiveperiod, $localdir, $filename, $tempdir);
-                $a = new stdClass();
-                $a->id = $userupload->id;
-                self::eventTrigger(get_string('filetransfertask_userfilearchive', 'local_lb_filetransfer', $a));
-                fulldelete($fileToUpload);
-
                 if ($userupload_status) {
                     //move remote file
                     if ((int)$connection->moveremotefile == 1) {
                         $today = time();  // Make the date stamp
                         $today = date("Y-m-d-h-m-s",$today);
                         $processed_filename = 'Processed_'.$today.'_'.$connection->filename;
-                        $sftp->put($connection->moveremotefiledirectory.$processed_filename, $fileToUpload);
+                        $sftp->put($connection->moveremotefiledirectory.$processed_filename, file_get_contents($fileToUpload));
                     }
                     $a = new stdClass();
                     $a->id = $userupload->id;
@@ -486,7 +484,7 @@ class lb_filetransfer_userupload {
                         $today = time();  // Make the date stamp
                         $today = date("Y-m-d-h-m-s",$today);
                         $failed_filename = 'Failed_'.$today.'_'.$connection->filename;
-                        $sftp->put($connection->movefailedfilesdirectory.$failed_filename, $fileToUpload);
+                        $sftp->put($connection->movefailedfilesdirectory.$failed_filename, file_get_contents($fileToUpload));
                     }
                     $a = new stdClass();
                     $a->id = $userupload->id;
@@ -498,6 +496,12 @@ class lb_filetransfer_userupload {
                     $sftp->delete($remotefile);
                 }
                 $sftp->disconnect();
+
+                //file archive
+                self::archive_file((int)$connection->archivefile, (int)$connection->archiveperiod, $localdir, $filename, $tempdir);
+                $a = new stdClass();
+                $a->id = $userupload->id;
+                self::eventTrigger(get_string('filetransfertask_userfilearchive', 'local_lb_filetransfer', $a));
                 //send log report
                 if ((int)$connection->emaillog == 1) {
                     //email log and file
@@ -521,7 +525,7 @@ class lb_filetransfer_userupload {
                     }
                 }
                 //delete temp file after full process
-                //fulldelete($fileToUpload);
+                fulldelete($fileToUpload);
             } else {
                 $a = new stdClass();
                 $a->id = $userupload->id;
