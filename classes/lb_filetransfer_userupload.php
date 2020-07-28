@@ -148,7 +148,7 @@ class lb_filetransfer_userupload {
         $_POST['uuupdatetype'] = (int)$connection->uuupdatetype;
         $_POST['uupasswordold'] = $connection->uupasswordold;
         $_POST['uuforcepasswordchange'] = (int)$connection->uupasswordold;
-        $_POST['allowrenames'] = $connection->allowrename;
+        $_POST['uuallowrenames'] = $connection->allowrename;
         $_POST['uuallowdeletes'] = $connection->allowdeletes;
         $_POST['uuallowsuspends'] = $connection->allowsuspend;
         $_POST['uunoemailduplicates'] = $connection->noemailduplicate;

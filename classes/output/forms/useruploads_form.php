@@ -122,34 +122,34 @@ class useruploads_form extends moodleform {
         $mform->setDefault('uupasswordold', 0);
 
         $allowrename = array();
-        $allowrename[0]  = get_string('yes', 'local_lb_filetransfer');
-        $allowrename[1] = get_string('no', 'local_lb_filetransfer');
+        $allowrename[1]  = get_string('yes', 'local_lb_filetransfer');
+        $allowrename[0] = get_string('no', 'local_lb_filetransfer');
         $mform->addElement('select', 'allowrename', get_string('allowrename', 'local_lb_filetransfer'), $allowrename);
         $mform->setDefault('allowrename', 1);
 
         $allowdeletes = array();
-        $allowdeletes[0]  = get_string('yes', 'local_lb_filetransfer');
-        $allowdeletes[1] = get_string('no', 'local_lb_filetransfer');
+        $allowdeletes[1]  = get_string('yes', 'local_lb_filetransfer');
+        $allowdeletes[0] = get_string('no', 'local_lb_filetransfer');
         $mform->addElement('select', 'allowdeletes', get_string('allowdeletes', 'local_lb_filetransfer'), $allowdeletes);
         $mform->setDefault('allowdeletes', 1);
 
         $allowsuspend = array();
-        $allowsuspend[0]  = get_string('yes', 'local_lb_filetransfer');
-        $allowsuspend[1] = get_string('no', 'local_lb_filetransfer');
+        $allowsuspend[1]  = get_string('yes', 'local_lb_filetransfer');
+        $allowsuspend[0] = get_string('no', 'local_lb_filetransfer');
         $mform->addElement('select', 'allowsuspend', get_string('allowsuspend', 'local_lb_filetransfer'), $allowsuspend);
         $mform->setDefault('allowsuspend', 1);
 
         $noemailduplicate = array();
-        $noemailduplicate[0]  = get_string('yes', 'local_lb_filetransfer');
-        $noemailduplicate[1] = get_string('no', 'local_lb_filetransfer');
+        $noemailduplicate[1]  = get_string('yes', 'local_lb_filetransfer');
+        $noemailduplicate[0] = get_string('no', 'local_lb_filetransfer');
         $mform->addElement('select', 'noemailduplicate', get_string('noemailduplicate', 'local_lb_filetransfer'), $noemailduplicate);
-        $mform->setDefault('noemailduplicate', 1);
+        $mform->setDefault('noemailduplicate', 0);
 
         $standardusername = array();
-        $standardusername[0]  = get_string('yes', 'local_lb_filetransfer');
-        $standardusername[1] = get_string('no', 'local_lb_filetransfer');
+        $standardusername[1]  = get_string('yes', 'local_lb_filetransfer');
+        $standardusername[0] = get_string('no', 'local_lb_filetransfer');
         $mform->addElement('select', 'standardusername', get_string('standardusername', 'local_lb_filetransfer'), $standardusername);
-        $mform->setDefault('standardusername', 1);
+        $mform->setDefault('standardusername', 0);
 
         $decryptfile = array();
         $decryptfile[] = $mform->createElement('radio', 'decryptfile', '', get_string('no', 'local_lb_filetransfer'), 0);
