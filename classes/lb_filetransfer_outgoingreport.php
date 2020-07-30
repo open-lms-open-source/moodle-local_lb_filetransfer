@@ -297,7 +297,7 @@ class lb_filetransfer_outgoingreport {
                         $user->deleted = 0;
                         if ((int)$connection->emailpreference == 0 || (int)$connection->emailpreference == 2) {
                             email_to_user($user, core_user::get_noreply_user(), get_string('outgoingreport_email_subject', 'local_lb_filetransfer'),
-                                get_string('outgoingreport_email_body', 'local_lb_filetransfer'), '', $export_file, $connection->filename,
+                                get_string('outgoingreport_email_body', 'local_lb_filetransfer'), '', $export_file_path, $connection->filename,
                                 true, '', '', 79);
                             $a = new stdClass();
                             $a->id = $outgoingreport->id;
@@ -329,11 +329,9 @@ class lb_filetransfer_outgoingreport {
                         $user->email = $email;
                         $user->suspended = 0;
                         $user->deleted = 0;
-                        if ((int)$connection->emailpreference == 1 || (int)$connection->emailpreference == 2) {
-                            email_to_user($user, core_user::get_noreply_user(), get_string('outgoingreport_logemail_subject', 'local_lb_filetransfer'),
-                                $send_log_data, '', $export_file, $connection->filename,
-                                true, '', '', 79);
-                        }
+                        email_to_user($user, core_user::get_noreply_user(), get_string('outgoingreport_logemail_subject', 'local_lb_filetransfer'),
+                            $send_log_data, '', '', $connection->filename,
+                            true, '', '', 79);
                         mtrace("Log send");
                     }
                 }
