@@ -318,7 +318,7 @@ class lb_filetransfer_outgoingreport {
             fulldelete($raw_file);
 
             //send log
-            if ((int)$connection->emailpreference = 1 || (int)$connection->emailpreference == 2) {
+            if ((int)$connection->emailpreference == 1 || (int)$connection->emailpreference == 2) {
                 $send_log_data = implode("\n",$log_data);
                 if (!empty($emails)) {
                     foreach ($emails as $keys => $email) {
