@@ -56,6 +56,9 @@ if ($outgoingreports_page_form->is_cancelled()) {
     if (empty($savedata->id)) {
         $savedata->active = 1;
     }
+    if (empty($savedata->connectionid)) {
+        $savedata->connectionid = 0;
+    }
     if ((int)$savedata->archivefile == 0) {
         $savedata->archiveperiod = 0;
     } else {
