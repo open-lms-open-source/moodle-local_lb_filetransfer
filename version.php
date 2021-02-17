@@ -12,6 +12,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_lb_filetransfer';
 $plugin->release = '1.1.0';
-$plugin->version = 20200081800;
+$plugin->version = 20200110203;
 $plugin->requires = 2017111303;
 $plugin->maturity = MATURITY_STABLE;

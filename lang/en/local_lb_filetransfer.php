@@ -29,6 +29,8 @@ $string['filetransfertask_userupload'] = 'User upload is successfully finished f
 $string['filetransfertask_userupload_error'] = 'User upload for the instance with id: {$a->id} is not successful, please check the csv file.';
 $string['filetransfertask_connection_error'] = 'User upload for the instance with id: {$a->id} is not successful, please check the connection settings.';
 $string['filetransfertask_userfilearchive'] = 'File cleanup and archiving has been done for user upload instance with id: {$a->id}.';
+$string['filetransfertask_fileimport'] = 'File import is successfully finished for the file import instance with id: {$a->id}.';
+$string['filetransfertask_import'] = 'File import';
 
 //event
 $string['filetransferstarted'] = 'File transfer process started.';
@@ -56,6 +58,7 @@ $string['connectioninfo'] = 'Connection info';
 $string['config_connections'] = 'Configure Connections';
 $string['config_useruploads'] = 'Configure User Uploads';
 $string['config_outgoingreports'] = 'Configure Outgoing Reports';
+$string['config_fileimport'] = 'Custom file import';
 
 //connections page
 $string['delete_connection'] = 'Delete connection';
@@ -176,3 +179,18 @@ $string['outgoingreport_logemail_subject'] = 'Learnbook Filetransfer Log';
 
 //userupload log email
 $string['userupload_log_report'] = 'Learnbook user upload report';
+
+//fileimport page
+$string['delete_fileimport'] = 'Delete file import instance';
+$string['delete_fileimport_confirmation'] = 'Are you sure you want to delete this file import instance: {$a->name}.';
+$string['fileimport_deleted'] = 'File import instance: {$a->name} deleted.';
+$string['fileimport_delete_failed'] = 'Could not delete file import instance: {$a->name}.';
+$string['fileimport_active'] = 'File import instance: {$a->name} is active.';
+$string['fileimport_active_error'] = 'Can not activate file import instance: {$a->name}.';
+$string['fileimport_deactive'] = 'File import instance: {$a->name} is deactivated.';
+$string['fileimport_deactive_error'] = 'Can not deactivate file import instance: {$a->name}.';
+$string['fileimport_saved'] = 'File import information saved successfully.';
+$string['fileimport_save_error'] = 'Error saving file import information.';
+
+//fileimport form
+$string['savetolocation'] = 'Location to import in moodledata';

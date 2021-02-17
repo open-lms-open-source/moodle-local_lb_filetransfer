@@ -166,5 +166,27 @@ function xmldb_local_lb_filetransfer_upgrade($oldversion) {
         }
     }
 
+    if ($oldversion < 20200110200) {
+        $table = new xmldb_table('local_lb_filetr_fileimport');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+        $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, null, null);
+        $table->add_field('connectionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null);
+        $table->add_field('pathtofile', XMLDB_TYPE_CHAR, '255', null, null, null);
+        $table->add_field('filename', XMLDB_TYPE_CHAR, '255', null, null, null);
+        $table->add_field('getlatestfile', XMLDB_TYPE_INTEGER, '1', null, null, null, 0);
+        $table->add_field('savetolocation', XMLDB_TYPE_CHAR, '255', null, null, null);
+        $table->add_field('active', XMLDB_TYPE_INTEGER, '1', null, null, null, 1);
+        $table ->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, null, null);
+        $table ->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null);
+        $table ->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null);
+
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('connection', XMLDB_KEY_FOREIGN, array('connectionid'), 'local_lb_filetr_connections', 'id');
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, array('usermodified'), 'user', 'id');
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+    }
+
     return true;
 }

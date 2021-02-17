@@ -29,5 +29,14 @@ $tasks = array(
         'day' => '*',
         'month' => '*',
         'dayofweek' => '*'
+    ),
+    array(
+        'classname' => 'local_lb_filetransfer\task\fileimport',
+        'blocking' => 0,
+        'minute' => '*',
+        'hour' => '2',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*'
     )
 );
