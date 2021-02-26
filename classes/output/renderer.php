@@ -13,20 +13,21 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * Learnbook File Transfer.
+ *
+ * @package     local
+ * @subpackage  lb_filetransfer
+ * @copyright   2020 eCreators PTY LTD
+ * @author      2020 A K M Safat Shahin <safat@ecreators.com.au>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace local_lb_filetransfer\output;
 defined('MOODLE_INTERNAL') || die;
 
 use plugin_renderer_base;
 use stdClass;
-
-/**
- * Learnbook File Transfer.
- *
- * @package    local
- * @subpackage lb_filetransfer
- * @copyright  2020 eCreators Safat
- */
 
 /**
  * Standard HTML output renderer

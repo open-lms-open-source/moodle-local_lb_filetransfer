@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<libraries>
+    <library>
+        <location>/lib/phpseclib/Net/SFTP.php</location>
+        <name>Net_SFTP</name>
+        <version>2.0</version>
+        <license>MIT License</license>
+    </library>
+    <library>
+        <location>/lib/phpseclib/Crypt/RSA.php</location>
+        <name>Crypt_RSA</name>
+        <version>2.0</version>
+        <license>MIT License</license>
+    </library>
+</libraries>

@@ -5,7 +5,8 @@
  *
  * @package     local_lb_filetransfer
  * @category    admin
- * @copyright   2019 A K M Safat Shahin <safat@ecreators.com.au>
+ * @copyright   2020 eCreators PTY LTD
+ * @author      2020 A K M Safat Shahin <safat@ecreators.com.au>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
