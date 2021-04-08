@@ -17,18 +17,19 @@
  * Plugin administration pages are defined here.
  *
  * @package     local_lb_filetransfer
- * @copyright   2020 eCreators PTY LTD
- * @author      2020 A K M Safat Shahin <safat@ecreators.com.au>
+ * @copyright   2021 eCreators PTY LTD
+ * @author      2021 A K M Safat Shahin <safat@ecreators.com.au>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require('../../config.php');
+require(__DIR__.'/../../config.php');
+global $CFG, $PAGE, $OUTPUT;
 require_once($CFG->libdir.'/adminlib.php');
-require($CFG->dirroot.'/local/lb_filetransfer/classes/useruploads_page.php');
-require($CFG->dirroot.'/local/lb_filetransfer/classes/output/tables/useruploads_table.php');
 
 
 use \core\output\notification;
+use local_lb_filetransfer\output\tables\useruploads_table;
+use local_lb_filetransfer\useruploads_page;
 
 require_login();
 admin_externalpage_setup('local_lb_filetransfer');

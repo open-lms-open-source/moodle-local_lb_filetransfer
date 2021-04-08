@@ -17,11 +17,12 @@
  * Plugin administration pages are defined here.
  *
  * @package     local_lb_filetransfer
- * @copyright   2020 eCreators PTY LTD
- * @author      2020 A K M Safat Shahin <safat@ecreators.com.au>
+ * @copyright   2021 eCreators PTY LTD
+ * @author      2021 A K M Safat Shahin <safat@ecreators.com.au>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_lb_filetransfer;
 defined('MOODLE_INTERNAL') || die;
 
 set_include_path(get_include_path(). PATH_SEPARATOR . $CFG->dirroot.'/local/lb_filetransfer/lib/phpseclib');
@@ -35,7 +36,15 @@ require_once($CFG->dirroot.'/group/lib.php');
 require_once($CFG->dirroot.'/cohort/lib.php');
 require_once($CFG->dirroot.'/admin/tool/uploaduser/locallib.php');
 require_once($CFG->dirroot.'/admin/tool/uploaduser/user_form.php');
-require($CFG->dirroot.'/local/lb_filetransfer/classes/lb_filetransfer_helper.php');
+
+use coding_exception;
+use core_user;
+use Crypt_RSA;
+use csv_import_reader;
+use dml_exception;
+use Net_SFTP;
+use stdClass;
+use Exception;
 
 /**
  * Class lb_filetransfer_userupload represents all the available userupload object.
@@ -173,66 +182,6 @@ class lb_filetransfer_userupload {
         $_POST['submitbutton'] = 'Upload users';
         $_POST['sesskey'] = sesskey();
 
-        //default values from moodle which will always work
-
-//        $_POST['iid'] = $iid;
-//        $_POST['previewrows'] = '10';
-//
-//        $_POST['uutype'] = UU_USER_ADD_UPDATE;
-//        $_POST['uupasswordnew'] = '1';
-//        $_POST['uuupdatetype'] = UU_UPDATE_ALLOVERRIDE;
-//        $_POST['uupasswordold'] = '0';
-//        $_POST['uuforcepasswordchange'] = UU_PWRESET_NONE;
-//        $_POST['allowrenames'] = '0';
-//        $_POST['uuallowdeletes'] = '0';
-//        $_POST['uuallowsuspends'] = '1';
-//        $_POST['uunoemailduplicates'] = '1';
-//        $_POST['uustandardusernames'] = '1';
-//        $_POST['uubulk'] = UU_BULK_ALL;
-//        $_POST['uuallowrenames'] = '0';
-//        $_POST['profile_field_cohortmanager'] = '_qf__force_multiselect_submission';
-//        $_POST['_qf__admin_uploaduser_form2'] = '1';
-//        $_POST['submitbutton'] = 'Upload users';
-//        $_POST['sesskey'] = sesskey();
-
-
-        /* //cohort select plugin doesn't accept csv upload. When that plugin is changed, this feature can be used.
-        $cohortSelect = cohort_select();
-        if (!empty($cohortSelect)) {
-            $_POST[$cohortSelect] = '_qf__force_multiselect_submission';
-        }*/
-
-        /*
-        $choices = uu_allowed_roles(true);
-        if ($studentroles = get_archetype_roles('student')) {
-            foreach ($studentroles as $role) {
-                if (isset($choices[$role->id])) {
-                    $_POST['uulegacy1'] = $role->id;
-                    break;
-                }
-            }
-            unset($studentroles);
-        }
-        if ($editteacherroles = get_archetype_roles('editingteacher')) {
-            foreach ($editteacherroles as $role) {
-                if (isset($choices[$role->id])) {
-                    $_POST['uulegacy2'] = $role->id;
-                    break;
-                }
-            }
-            unset($editteacherroles);
-        }
-        if ($teacherroles = get_archetype_roles('teacher')) {
-            foreach ($teacherroles as $role) {
-                if (isset($choices[$role->id])) {
-                    $_POST['uulegacy3'] = $role->id;
-                    break;
-                }
-            }
-            unset($teacherroles);
-        }
-        */
-
         $templateuser = $USER;
 
         mtrace('Setting up the default profile fields.');
@@ -334,8 +283,6 @@ class lb_filetransfer_userupload {
     public function file_decrypt ($encryptiontype, $encryptedfile, $privatekey) {
         if ($encryptiontype == 1) {
             $rsa = new Crypt_RSA();
-//            var_dump($encryptedfile);
-//            var_dump($privatekey);
             $ciphertext = base64_decode($encryptedfile);
             $rsa->loadKey($privatekey);
             $output = $rsa->decrypt($ciphertext);
@@ -356,7 +303,6 @@ class lb_filetransfer_userupload {
                                                                WHERE active = :active',
                                                                array('active' => 1));
         foreach ($get_userupload_instances as $userupload) {
-            //$log_data = array();
             $connection = new lb_filetransfer_helper((int)$userupload->id);
             if($connection->test_connection()) {
                 //add event
@@ -546,7 +492,6 @@ class lb_filetransfer_userupload {
                 self::eventTrigger(get_string('filetransfertask_connection_error', 'local_lb_filetransfer', $a));
                 mtrace("Connection error");
             }
-            //$log_data[] = self::create_log_data($log_time);
         }
     }
 

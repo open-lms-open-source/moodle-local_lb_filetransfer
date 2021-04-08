@@ -17,17 +17,25 @@
  * Plugin administration pages are defined here.
  *
  * @package     local_lb_filetransfer
- * @copyright   2020 eCreators PTY LTD
- * @author      2020 A K M Safat Shahin <safat@ecreators.com.au>
+ * @copyright   2021 eCreators PTY LTD
+ * @author      2021 A K M Safat Shahin <safat@ecreators.com.au>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_lb_filetransfer;
 defined('MOODLE_INTERNAL') || die;
-
+global $CFG;
 set_include_path(get_include_path(). PATH_SEPARATOR . $CFG->dirroot.'/local/lb_filetransfer/lib/phpseclib');
 require_once($CFG->dirroot .'/local/lb_filetransfer/lib/phpseclib/Net/SFTP.php');
 require_once($CFG->dirroot .'/local/lb_filetransfer/lib/phpseclib/Crypt/RSA.php');
-require($CFG->dirroot.'/local/lb_filetransfer/classes/lb_filetransfer_report_helper.php');
+
+use coding_exception;
+use core_user;
+use Crypt_RSA;
+use csv_export_writer;
+use dml_exception;
+use Net_SFTP;
+use stdClass;
 
 /**
  * Class lb_filetransfer_outgoingreport represents all the available outgoing report object.
@@ -206,9 +214,6 @@ class lb_filetransfer_outgoingreport {
             $rsa = new Crypt_RSA();
             $rsa->loadKey($encryptionkey);
             $output = $rsa->encrypt($rawfile);
-//            var_dump('encrypted file');
-//            var_dump(base64_encode($output));
-//            self::file_decrypt(base64_encode($output), $privatekey);
             return base64_encode($output);
         }
     }

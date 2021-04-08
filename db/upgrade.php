@@ -13,14 +13,13 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
 /**
  * Plugin upgrade steps are defined here.
  *
  * @package     local_lb_filetransfer
  * @category    upgrade
- * @copyright   2020 eCreators PTY LTD
- * @author      2020 A K M Safat Shahin <safat@ecreators.com.au>
+ * @copyright   2021 eCreators PTY LTD
+ * @author      2021 A K M Safat Shahin <safat@ecreators.com.au>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

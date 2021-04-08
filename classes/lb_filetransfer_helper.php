@@ -17,16 +17,23 @@
  * Plugin administration pages are defined here.
  *
  * @package     local_lb_filetransfer
- * @copyright   2020 eCreators PTY LTD
- * @author      2020 A K M Safat Shahin <safat@ecreators.com.au>
+ * @copyright   2021 eCreators PTY LTD
+ * @author      2021 A K M Safat Shahin <safat@ecreators.com.au>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_lb_filetransfer;
 defined('MOODLE_INTERNAL') || die;
-
+global $CFG;
 set_include_path(get_include_path(). PATH_SEPARATOR . $CFG->dirroot.'/local/lb_filetransfer/lib/phpseclib');
 require_once($CFG->dirroot .'/local/lb_filetransfer/lib/phpseclib/Net/SFTP.php');
 require_once($CFG->dirroot .'/local/lb_filetransfer/lib/phpseclib/Crypt/RSA.php');
+
+use coding_exception;
+use Crypt_RSA;
+use dml_exception;
+use Net_SFTP;
+use stdClass;
 
 /**
  * Class lb_filetransfer_helper represents a lb_filetransfer_helper object.
@@ -69,7 +76,6 @@ class lb_filetransfer_helper {
     /**
      * lb_filetransfer_helper constructor.
      * Builds object if $id provided.
-     * @param null $object
      * @param null $objectid
      * @throws dml_exception
      */
@@ -214,15 +220,6 @@ class lb_filetransfer_helper {
         $port = $this->portnumber;
         $username = $this->username;
         $sftp = new Net_SFTP($host, $port);
-
-        if (empty($this->pathtofile)) {
-            $remotedir = '/';
-        }
-        else {
-            $remotedir = $this->pathtofile;
-        }
-
-        $filename = $this->filename;
         if ($this->usepublickey == 0) {
             $password = $this->password;
             if (!$sftp->login($username, $password)) {
@@ -241,23 +238,6 @@ class lb_filetransfer_helper {
                 return false;
             }
         }
-//        if (!empty($filename)) {
-//            if ($sftp->file_exists($remotedir . $filename)) {
-//                if (!$sftp->is_readable($remotedir . $filename)) {
-//                    $a = new stdClass();
-//                    $a->id = $this->connectionid;
-//                    self::eventTrigger(get_string('filetransfertask_fileread_error', 'local_lb_filetransfer', $a));
-//                    return false;
-//                }
-//            } else {
-//                $a = new stdClass();
-//                $a->id = $this->connectionid;
-//                self::eventTrigger(get_string('filetransfertask_nofile_error', 'local_lb_filetransfer', $a));
-//                return false;
-//            }
-//        } else {
-//            return false;
-//        }
         return true;
     }
 

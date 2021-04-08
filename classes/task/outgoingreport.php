@@ -18,17 +18,15 @@
  *
  * @package     local_lb_filetransfer
  * @category    admin
- * @copyright   2020 eCreators PTY LTD
- * @author      2020 A K M Safat Shahin <safat@ecreators.com.au>
+ * @copyright   2021 eCreators PTY LTD
+ * @author      2021 A K M Safat Shahin <safat@ecreators.com.au>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace local_lb_filetransfer\task;
-
 defined('MOODLE_INTERNAL') || die();
 
-global $CFG;
-require($CFG->dirroot.'/local/lb_filetransfer/classes/lb_filetransfer_outgoingreport.php');
+use local_lb_filetransfer\lb_filetransfer_outgoingreport;
 
 class outgoingreport extends \core\task\scheduled_task {
 
@@ -37,6 +35,6 @@ class outgoingreport extends \core\task\scheduled_task {
     }
 
     public function execute() {
-        (new \lb_filetransfer_outgoingreport)->send_outgoingreport();
+        (new lb_filetransfer_outgoingreport)->send_outgoingreport();
     }
 }

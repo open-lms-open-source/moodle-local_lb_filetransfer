@@ -17,14 +17,19 @@
  * Plugin administration pages are defined here.
  *
  * @package     local_lb_filetransfer
- * @copyright   2020 eCreators PTY LTD
- * @author      2020 A K M Safat Shahin <safat@ecreators.com.au>
+ * @copyright   2021 eCreators PTY LTD
+ * @author      2021 A K M Safat Shahin <safat@ecreators.com.au>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_lb_filetransfer\output\forms;
 defined('MOODLE_INTERNAL') || die();
-
+global $CFG;
 require_once($CFG->dirroot . '/lib/formslib.php');
+
+use coding_exception;
+use local_lb_filetransfer\outgoingreports_page;
+use moodleform;
 
 /**
  * Class outgoingreports_form.
@@ -34,7 +39,6 @@ class outgoingreports_form extends moodleform {
 
     /**
      * Defines the custom outgoingreports_form.
-     * @throws dml_exception
      * @throws coding_exception
      */
     public function definition() {
@@ -58,7 +62,6 @@ class outgoingreports_form extends moodleform {
 
         $connectiontype = (new outgoingreports_page)->get_connections();
         $mform->addElement('select', 'connectionid', get_string('connectionid', 'local_lb_filetransfer'), $connectiontype);
-//        $mform->addRule('connectionid', get_string('required'), 'required', null, 'client');
         $mform->setDefault('connectionid', 0);
 
         $configurablereportid = (new outgoingreports_page)->get_configurable_reports();
@@ -67,7 +70,6 @@ class outgoingreports_form extends moodleform {
         $mform->setDefault('configurablereportid', 0);
 
         $mform->addElement('text', 'pathtofile', get_string('pathtofile','local_lb_filetransfer'));
-//        $mform->addRule('pathtofile', get_string('required'), 'required', null, 'client');
         $mform->addRule('pathtofile',get_string('maximum_character_255', 'local_lb_filetransfer'), 'maxlength', 255, 'client');
         $mform->setType('pathtofile', PARAM_TEXT);
 

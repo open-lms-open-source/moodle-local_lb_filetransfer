@@ -17,14 +17,17 @@
  * Plugin administration pages are defined here.
  *
  * @package     local_lb_filetransfer
- * @copyright   2020 eCreators PTY LTD
- * @author      2020 A K M Safat Shahin <safat@ecreators.com.au>
+ * @copyright   2021 eCreators PTY LTD
+ * @author      2021 A K M Safat Shahin <safat@ecreators.com.au>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_lb_filetransfer\output\forms;
 defined('MOODLE_INTERNAL') || die();
-
+global $CFG;
 require_once($CFG->dirroot . '/lib/formslib.php');
+
+use moodleform;
 
 /**
  * Class connection_form.
@@ -50,8 +53,6 @@ class connection_form extends moodleform {
 
         $connectiontype = array();
         $connectiontype[] = $mform->createElement('radio', 'connectiontype', '', get_string('connection_sftp','local_lb_filetransfer'), 1);
-        //for future addition of different connection types
-        //$connectiontype[] = $mform->createElement('radio', 'connectiontype', '', get_string('connection_ftp', 'local_lb_filetransfer'), 2);
         $mform->addGroup($connectiontype, 'connections', get_string('connectiontype', 'local_lb_filetransfer'), array(' '), false);
         $mform->setDefault('connectiontype', 1);
 
