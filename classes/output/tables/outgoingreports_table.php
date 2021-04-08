@@ -28,6 +28,7 @@ global $CFG;
 require_once($CFG->libdir.'/tablelib.php');
 
 use coding_exception;
+use DateTime;
 use moodle_exception;
 use moodle_url;
 use table_sql;
@@ -65,9 +66,8 @@ class outgoingreports_table extends table_sql {
         $fields = "id,
         name,
         active,
-        FROM_UNIXTIME(timecreated, '%d/%m/%Y %H:%i:%s') AS timecreated,
-        FROM_UNIXTIME(timemodified, '%d/%m/%Y %H:%i:%s') AS timemodified,
-        timemodified as timemodified_raw,
+        timecreated,
+        timemodified,
         '' AS actions";
         $from = "{local_lb_filetr_reports}";
         $where = 'id > 0';
@@ -107,12 +107,33 @@ class outgoingreports_table extends table_sql {
     }
 
     /**
-     * convert invalid to '-'
+     * convert invalid timecreated to '-'
+     * @param $values
+     * @return string
+     */
+    public function col_timecreated($values) {
+        if (!empty($values->timecreated)) {
+            $dt = new DateTime("@$values->timecreated");  // convert UNIX timestamp to PHP DateTime
+            $result = $dt->format('d/m/Y H:i:s'); // output = 2017-01-01 00:00:00
+        } else {
+            $result = '-';
+        }
+        return $result;
+    }
+
+    /**
+     * convert invalid timemodified to '-'
      * @param $values
      * @return string
      */
     public function col_timemodified($values) {
-        return !empty($values->timemodified_raw) ? $values->timemodified : '-';
+        if (!empty($values->timemodified)) {
+            $dt = new DateTime("@$values->timemodified");  // convert UNIX timestamp to PHP DateTime
+            $result = $dt->format('d/m/Y H:i:s'); // output = 2017-01-01 00:00:00
+        } else {
+            $result = '-';
+        }
+        return $result;
     }
 
     /**

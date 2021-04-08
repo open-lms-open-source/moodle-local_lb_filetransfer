@@ -28,6 +28,7 @@ global $CFG;
 require_once($CFG->libdir.'/tablelib.php');
 
 use coding_exception;
+use DateTime;
 use dml_exception;
 use local_lb_filetransfer\connections_page;
 use moodle_exception;
@@ -68,8 +69,7 @@ class connections_table extends table_sql {
         name,
         active,
         '' AS connectioninfo,
-        FROM_UNIXTIME(timemodified, '%d/%m/%Y %H:%i:%s') AS timemodified,
-        timemodified as timemodified_raw,
+        timemodified,
         '' AS actions";
         $from = "{local_lb_filetr_connections}";
         $where = 'id > 0';
@@ -126,12 +126,18 @@ class connections_table extends table_sql {
     }
 
     /**
-     * convert invalid to '-'
+     * convert invalid timemodified to '-'
      * @param $values
      * @return string
      */
     public function col_timemodified($values) {
-        return !empty($values->timemodified_raw) ? $values->timemodified : '-';
+        if (!empty($values->timemodified)) {
+            $dt = new DateTime("@$values->timemodified");  // convert UNIX timestamp to PHP DateTime
+            $result = $dt->format('d/m/Y H:i:s'); // output = 2017-01-01 00:00:00
+        } else {
+            $result = '-';
+        }
+        return $result;
     }
 
     /**
